@@ -341,63 +341,55 @@ As per [doc]((https://docs.ansible.com/ansible/latest/scenario_guides/guide_gce.
 Then add to `/etc/ansible/ansible.cfg` the following (must include all the default plugins to still be able to parse the standard hosts file)
 
 ```
+[defaults]
+inventory      = /opt/ansible/inventory/gcp.yaml
+
 [inventory]
 enable_plugins = gcp_compute, host_list, script, auto, yaml, ini, toml 
 ```
 
-Then create dev.gcp.yml
+We want to define groups that we can run playbooks against. We can do that by creating`/opt/ansible/inventory/gcp.yaml` and using the instance name, although there are other options such as tags if there are multiple instances in each group ([more info](https://devopscube.com/ansible-dymanic-inventry-google-cloud/)) 
+
+
 
 ```
 plugin: gcp_compute
 projects:
-  - xxxx
+  - healthy-reason-375613
 auth_kind: serviceaccount
-service_account_file: /home/tim/xxxx.json
-
-```
-
-```
-$ ansible-inventory --list -i dev.gcp.yml 
-<returns info on the instances in json format>
-```
-
-
-[ansible inventory groups for gcp](https://devopscube.com/ansible-dymanic-inventry-google-cloud/)
-
-Modify the gcp.yml file:
-
-```
-plugin: gcp_compute
-projects:
-  - some-project-000000
-auth_kind: serviceaccount
-service_account_file: /home/tim/some-project-000000-xxxxxxxxx.json
+service_account_file: /home/tim/healthy-reason-375613-970326130116.json
 keyed_groups:
   - key: labels
   - prefix: label
 groups:
-  development: "'environment' in (labels|list)"
-```
-
-check:
-
-```
-$ ansible-inventory --list | grep development -A4
-            "development",
-            "governorpilot",
-            "governors",
-            "odroid",
-            "penduinopilot",
---
-    "development": {
-        "hosts": [
-            "34.105.220.20"
-        ]
-    },
+  app_practable_dev: "'instance-app-practable-dev' in name"
+  app_practable_ed0: "'instance-app-practable-ed0' in name"
+  
 ```
 
 ```
-$  ansible development -m ping
+$ ansible-inventory --list 
+<returns info on the instances in json format>
+```
+
+
+```
+$ ansible-inventory --graph 
+@all:
+<snip>
+  |--@app_practable_dev:
+  |  |--34.147.137.222
+  |--@app_practable_ed0:
+  |  |--34.142.59.89
+<snip>
+```
+
+
+```
+$  ansible app-practable-dev -m ping
+
+
+
 The authenticity of host '34.105.220.20 (34.105.220.20)' can't be established.
 ECDSA key fingerprint is SHA256:<snip>.
 Are you sure you want to continue connecting (yes/no/[fingerprint])? yes 
