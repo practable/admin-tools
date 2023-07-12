@@ -1,0 +1,8 @@
+---
+domain: $DOMAIN
+static_repo_name: $STATIC_REPO_NAME
+static_repo_url: $STATIC_REPO_URL
+static_sub_dirs: $STATIC_SUB_DIRS
+dev_static_repo_name: $DEV_STATIC_REPO_NAME
+dev_static_repo_url: $DEV_STATIC_REPO_URL
+dev_static_sub_dirs: $DEV_STATIC_SUB_DIRS

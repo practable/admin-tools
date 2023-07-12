@@ -1,0 +1,405 @@
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+include /etc/nginx/modules-enabled/*.conf;
+
+events {
+	worker_connections 20000;
+}
+
+http {
+
+	sendfile on;
+	tcp_nopush on;
+	tcp_nodelay on;
+	keepalive_timeout 65;
+	types_hash_max_size 2048;
+
+	include /etc/nginx/mime.types;
+	default_type application/octet-stream;
+
+	ssl_protocols TLSv1.2 TLSv1.3;
+	ssl_prefer_server_ciphers on;
+
+	access_log /var/log/nginx/access.log;
+	error_log /var/log/nginx/error.log;
+
+	gzip on;
+
+	include /etc/nginx/conf.d/*.conf;
+	include /etc/nginx/sites-enabled/*;
+	client_max_body_size 0;
+
+
+    server {
+        listen 80;
+        server_name $DOMAIN;
+        return 301 $HOST$request_uri;
+    }
+
+    server {
+
+        listen 443 ssl;
+        server_name $DOMAIN;
+        root /var/www/$DOMAIN;
+
+        ssl_certificate /etc/letsencrypt/live/$DOMAIN/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/$DOMAIN/privkey.pem;
+        include /etc/letsencrypt/options-ssl-nginx.conf;
+        ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+        location / {
+
+            if ($request_method = 'OPTIONS') {
+              add_header 'Access-Control-Allow-Origin' '*';
+              add_header 'Access-Control-Allow-Credentials' 'true';
+              add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS';
+              add_header 'Access-Control-Allow-Headers' 'Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+              add_header 'Access-Control-Max-Age' 86400;
+              add_header 'Content-Type' 'text/plain charset=UTF-8';
+              add_header 'Content-Length' 0;
+              return 204; break;
+           }
+           if ($request_method = 'GET') {
+              add_header 'Access-Control-Allow-Origin' '*';
+              add_header 'Access-Control-Allow-Credentials' 'true';
+              add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS';
+              add_header 'Access-Control-Allow-Headers' 'Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+           }
+
+           add_header Access-Control-Allow-Origin *;
+           try_files $uri /$uri /index.html;
+        }
+
+
+        location /static/ {
+
+          try_files $uri /$uri /index.html;
+        }
+
+        location /static/ui/analytics-pend-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/analytics-pend-1.0/;
+            index index.html;
+        }
+		
+        location /static/ui/analytics-spin-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/analytics-spin-1.0/;
+            index index.html;
+        }
+		
+        location /static/ui/camera-test-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/camera-test-1.0/;
+            index index.html;
+        }
+
+        location /static/ui/debug-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/debug-1.0/;
+            index index.html;
+        }
+
+        location /static/ui/governor-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/governor-1.0/;
+            index index.html;
+        }
+
+        location /static/ui/penduino-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/penduino-1.0/;
+            index index.html;
+        }
+
+        location /static/ui/pvna-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/pvna-1.0/;
+            index index.html;
+        }
+
+	    location /static/ui/spinner-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/spinner-1.0/;
+            index index.html;
+        }
+
+        location /static/info/spinner-1.0/ {
+            try_files $uri $uri/ $uri.html /info/spinner-1.0/;
+            index index.html;
+        }
+
+        location /static/info/spinner-2.0/ {
+            try_files $uri $uri/ $uri.html /info/spinner-2.0/;
+            index index.html;
+        }
+
+        location /static/ui/simple-spinner-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/simple-spinner-1.0/;
+            index index.html;
+        }
+
+        location /static/ui/spinner-2.0/ {
+            try_files $uri $uri/ $uri.html /ui/spinner-2.0/;
+            index index.html;
+        }
+
+        location /static/ui/spinner-sim-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/spinner-sim-1.0/;
+            index index.html;
+        }
+
+        location /static/ui/truss-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/truss-1.0/;
+            index index.html;
+        }
+
+        location /static/ui/truss-noforce-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/truss-noforce-1.0/;
+            index index.html;
+        }
+
+        location /static/info/truss-1.0/ {
+            try_files $uri $uri/ $uri.html /info/truss-1.0/;
+            index index.html;
+        }
+
+        location /static/info/truss-noforce-1.0/ {
+            try_files $uri $uri/ $uri.html /info/truss-noforce-1.0/;
+            index index.html;
+        }
+
+        location /static/ui/turner-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/turner-1.0/;
+            index index.html;
+        }
+
+        location /dev-static/ {
+ 
+            add_header Access-Control-Allow-Origin *;
+            try_files $uri /$uri /index.html;
+        }
+
+     	location /dev-static/ui/camera-test-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/camera-test-1.0/;
+            index index.html;
+        }
+
+        location /dev-static/ui/debug-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/debug-1.0/;
+            index index.html;
+        }
+
+        location /dev-static/dev-static/ui/governor-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/governor-1.0/;
+            index index.html;
+        }
+
+    	location /dev-static/ui/penduino-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/penduino-1.0/;
+            index index.html;
+        }
+
+        location /dev-static/ui/pvna-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/pvna-1.0/;
+            index index.html;
+        }
+
+        location /dev-static/ui/spinner-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/spinner-1.0/;
+            index index.html;
+        }
+
+        location /dev-static/ui/spinner-2.0/ {
+            try_files $uri $uri/ $uri.html /ui/spinner-2.0/;
+            index index.html;
+        }
+
+	    location /dev-static/ui/spinner-sim-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/spinner-sim-1.0/;
+            index index.html;
+		}
+
+        location /dev-static/ui/turner-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/turner-1.0/;
+            index index.html;
+        }
+
+	    location /dev-static/ui/truss-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/truss-1.0/;
+            index index.html;
+        }
+
+        location /dev-static/ui/truss-noforce-1.0/ {
+            try_files $uri $uri/ $uri.html /ui/truss-noforce-1.0/;
+            index index.html;
+        }
+
+     	location /book/ {
+	       add_header Access-Control-Allow-Origin *;
+    	   try_files $uri /$uri /book/index.html;
+    	}
+
+        location /book/api/ {
+	
+			
+            if ($request_method = 'OPTIONS') {
+              add_header 'Access-Control-Allow-Origin' '*' always;
+              add_header 'Access-Control-Allow-Credentials' 'true';
+              add_header 'Access-Control-Allow-Methods' 'DELETE, GET, PUT, POST, OPTIONS';
+              add_header 'Access-Control-Allow-Headers' 'Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+              add_header 'Access-Control-Max-Age' 86400;
+              add_header 'Content-Type' 'text/plain charset=UTF-8';
+              add_header 'Content-Length' 0;
+              return 204; break;
+           }
+
+           if ($request_method = 'DELETE') {
+              add_header 'Access-Control-Allow-Origin' '*' always;
+              add_header 'Access-Control-Allow-Credentials' 'true';
+              add_header 'Access-Control-Allow-Methods' 'DELETE, GET, PUT, POST, OPTIONS';
+              add_header 'Access-Control-Allow-Headers' 'Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+           }
+
+           if ($request_method = 'GET') {
+              add_header 'Access-Control-Allow-Origin' '*' always;
+              add_header 'Access-Control-Allow-Credentials' 'true';
+              add_header 'Access-Control-Allow-Methods' 'DELETE, GET, PUT, POST, OPTIONS';
+              add_header 'Access-Control-Allow-Headers' 'Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+           }
+
+           if ($request_method = 'POST') {
+              add_header 'Access-Control-Allow-Origin' '*' always;
+              add_header 'Access-Control-Allow-Credentials' 'true';
+              add_header 'Access-Control-Allow-Methods' 'DELETE, GET, PUT, POST, OPTIONS';
+              add_header 'Access-Control-Allow-Headers' 'Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+           }
+
+           if ($request_method = 'PUT') {
+              add_header 'Access-Control-Allow-Origin' '*' always;
+              add_header 'Access-Control-Allow-Credentials' 'true';
+              add_header 'Access-Control-Allow-Methods' 'DELETE, GET, PUT, POST, OPTIONS';
+              add_header 'Access-Control-Allow-Headers' 'Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+           }
+
+           proxy_pass          http://localhost:$BOOK_PORT/api/;
+           proxy_http_version 1.1;
+           proxy_set_header    Host             $host;
+           proxy_set_header    X-Real-IP        $remote_addr;
+           proxy_set_header    X-Forwarded-For  $proxy_add_x_forwarded_for;
+           proxy_read_timeout 1800;
+           proxy_connect_timeout 1800;
+
+         }
+
+	
+        location /access/ {
+
+            if ($request_method = 'OPTIONS') {
+              add_header 'Access-Control-Allow-Origin' '*';
+              add_header 'Access-Control-Allow-Credentials' 'true';
+              add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+              add_header 'Access-Control-Allow-Headers' 'Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+              add_header 'Access-Control-Max-Age' 86400;
+              add_header 'Content-Type' 'text/plain charset=UTF-8';
+              add_header 'Content-Length' 0;
+              return 204; break;
+           }
+           if ($request_method = 'DELETE') {
+              add_header 'Access-Control-Allow-Origin' '*';
+              add_header 'Access-Control-Allow-Credentials' 'true';
+              add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+              add_header 'Access-Control-Allow-Headers' 'Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+           }    
+           if ($request_method = 'GET') {
+              add_header 'Access-Control-Allow-Origin' '*';
+              add_header 'Access-Control-Allow-Credentials' 'true';
+              add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+              add_header 'Access-Control-Allow-Headers' 'Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+           }
+		   if ($request_method = 'POST') {
+              add_header 'Access-Control-Allow-Origin' '*';
+              add_header 'Access-Control-Allow-Credentials' 'true';
+              add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+              add_header 'Access-Control-Allow-Headers' 'Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+           }
+           if ($request_method = 'PUT') {
+              add_header 'Access-Control-Allow-Origin' '*';
+              add_header 'Access-Control-Allow-Credentials' 'true';
+              add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+              add_header 'Access-Control-Allow-Headers' 'Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+           }		   
+		   
+            proxy_pass          http://localhost:$RELAY_PORT_ACCESS/;
+            proxy_http_version 1.1;
+            proxy_set_header    Host             $host;
+            proxy_set_header    X-Real-IP        $remote_addr;
+            proxy_set_header    X-Forwarded-For  $proxy_add_x_forwarded_for;
+            proxy_read_timeout 1800;
+            proxy_connect_timeout 1800;
+        }
+   	
+
+    	location /relay/ {
+
+    	    proxy_http_version 1.1;
+    	    proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+    	    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    	    proxy_pass http://localhost:$RELAY_PORT_RELAY/;
+    	}
+
+        location /jump/api/ {
+
+            if ($request_method = 'OPTIONS') {
+              add_header 'Access-Control-Allow-Origin' '*';
+              add_header 'Access-Control-Allow-Credentials' 'true';
+              add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+              add_header 'Access-Control-Allow-Headers' 'Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+              add_header 'Access-Control-Max-Age' 86400;
+              add_header 'Content-Type' 'text/plain charset=UTF-8';
+              add_header 'Content-Length' 0;
+              return 204; break;
+           }
+           if ($request_method = 'DELETE') {
+              add_header 'Access-Control-Allow-Origin' '*';
+              add_header 'Access-Control-Allow-Credentials' 'true';
+              add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+              add_header 'Access-Control-Allow-Headers' 'Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+           }    
+           if ($request_method = 'GET') {
+              add_header 'Access-Control-Allow-Origin' '*';
+              add_header 'Access-Control-Allow-Credentials' 'true';
+              add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+              add_header 'Access-Control-Allow-Headers' 'Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+           }
+		   if ($request_method = 'POST') {
+              add_header 'Access-Control-Allow-Origin' '*';
+              add_header 'Access-Control-Allow-Credentials' 'true';
+              add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+              add_header 'Access-Control-Allow-Headers' 'Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+           }
+           if ($request_method = 'PUT') {
+              add_header 'Access-Control-Allow-Origin' '*';
+              add_header 'Access-Control-Allow-Credentials' 'true';
+              add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+              add_header 'Access-Control-Allow-Headers' 'Authorization,DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type';
+           }		   
+
+            rewrite ^/jump(/.*)$ $1 break;
+            proxy_pass          http://localhost:$JUMP_PORT_ACCESS/;
+            proxy_http_version 1.1;
+            proxy_set_header    Host             $host;
+            proxy_set_header    X-Real-IP        $remote_addr;
+            proxy_set_header    X-Forwarded-For  $proxy_add_x_forwarded_for;
+            proxy_read_timeout 1800;
+            proxy_connect_timeout 1800;
+        }
+   	
+
+    	location /jump/connect/ {
+		    rewrite ^/jump(/.*)$ $1 break;
+    	    proxy_http_version 1.1;
+    	    proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+    	    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    	    proxy_pass http://localhost:$JUMP_PORT_RELAY/;
+    	}
+    }
+  
+}
+
+

@@ -6,16 +6,58 @@ This repo contains documentation and scripts for setting up and operating the of
 
 ![](./img/user-50.png) 
 
-Some hints or advice for setting up a stand-alone instance or potential enhancements to our current approach
+Some hints or advice for setting up a stand-alone instance or potential enhancements to our current approach. Please consider submitting pull requests with  documentation improvements, e.g. where we have missed something you had to work out / look up / ask us.
 
 ***
 
-## Contents
+## README Contents
+
+- Repo contents
+- Network / service architecture
+- Provisioning (on Google Compute Platform)
+- Installing & Administering Practable services
+
+If you already have a working instance, then skip to the installation/administration guides for each instance here:
+
+-  [dev](./dev/README.md)
+-  [ed0](./ed0/README.md)
+
+## Repo Contents
+
+The configuration and tools for each instance are held in separate directories, to minimise accidental operations on the wrong instance (a. 
+
+```
+├── dev: setup and admin tools for the development instance `dev`
+├── ed0: setup and admin tools for the production instance `ed0` 
+└── img: images for README.md
+```
+
+Organising the files in this way has some small advantages
+
+- safety
+    -  any operations are performed on the instance associated with your current working directory
+    -  this avoids inadvertently running a playbook on the wrong instance e.g. by using command line history incorrectly
+- convenience
+    -  we can modify the development server configuration, scripts and tools without being constrained by the production version
+	-  differences between instances can be determined via diff operation, e.g. on the configuration script
+
+***
+
+![](./img/user-50.png) 
+
+To set up your own instance, then
+
+-  fork this repo
+-  copy the `ed0` directory (the production instance) and give it a meaningful name 
+-  edit the configuration script in your new directory
+-  generate your files by using the configuration script
+
+If you intend to develop new admin tools, please open an issue so we can discuss, and consider submitting a PR with the tool in either the `dev` / `ed0` directories as appropriate.
+
+***
 
 
-- architecture
-- setting up an instance
-- administration tools
+
 
 ## Architecture 
 
@@ -38,7 +80,7 @@ Each official practable instance is served at a separate path under the `app` su
 
 | ![instances.svg](./img/instances.svg) |
 |:--:| 
-| *Practable instances served at different paths on `app` subdomain* |
+| *Practable instances served at different paths on `app` subdomain* - note only `dev` and `ed0` exist at present |
 
 
 We anticipate running more than one instance for an organisation in future, with a proposed naming scheme of `xxN`. Each instance will be allocated a sub-set of the experiments to manage exclusively. Managing a large number of experiments, across multiple instances can be supported by allocating one of the instance's booking systems to manage all the bookings, although this requires [further testing](https://github.com/practable/book/issues/23). We include a `dev` instance (possibly on a smaller virtual machine) for core-code development and testing.
@@ -122,7 +164,6 @@ These requirements may increase if you have many experiments, and as the system 
 ***
 
 
-
 ### Experiment configuration
 
 Setting up a typical experiment involves preparing JWT tokens for the video and data connections to the `relay` service and the admin connection to the `jump` service. An experiment can connect to multiple instances if so desired, e.g. to support active-passive failover, but only one instance should be permitted to handle the booking of an experiment (to avoid users on different instances booking at the same time, and colliding).
@@ -131,7 +172,7 @@ There is more information on experiment configuration in the repos for our exist
 
 TODO - update this document with a link to a repo that represents a good example.
 
-## Google Compute Engine & Load Balancer Configuration
+## Provisioning (on Google Compute Platform)
 
 Our system does not rely on any particular cloud provider features, so theoretically it can run on any provider that will give you VMs with a few CPU and few GB of RAM, a public IPv4 address, firewall with open ports for incoming 443/tcp and 22/tcp, and root access, as well as some form of load balancer if you need one. Issues we have encountered with some suppliers of cloud compute services include lack of (a) root access, (b) public IPv4, (c) convenient tooling for provisioning. 
 
@@ -328,7 +369,7 @@ gcloud compute ssh --zone "europe-west2-c" "instance-app-practable-ed0"  --proje
 ```
 If you get the standard `ssh` login, then they are up and running. In GCP dashboard, the new instances are failing the health checks we created because there is no web service setup on them. We install the services in the next step.
 
-## Setup ansible for use with the project 
+### Set up ansible for use with the project 
 
 Ansible support is [described here](https://docs.ansible.com/ansible/latest/scenario_guides/guide_gce.html)
 
@@ -387,13 +428,15 @@ $ ansible-inventory --graph
 
 ```
 $  ansible app-practable-dev -m ping
-
-
-
-The authenticity of host '34.105.220.20 (34.105.220.20)' can't be established.
-ECDSA key fingerprint is SHA256:<snip>.
-Are you sure you want to continue connecting (yes/no/[fingerprint])? yes 
-34.105.220.20 | SUCCESS => {
+34.147.137.222 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+$ ansible app_practable_ed0 -m ping  
+34.142.59.89 | SUCCESS => {
     "ansible_facts": {
         "discovered_interpreter_python": "/usr/bin/python3"
     },
@@ -402,8 +445,40 @@ Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
 }
 ```
 
-		
+## Installing practable services
 
+The installation process has several steps
+
+-  gather / generate required information 
+   -  ansible inventory "group" name: e.g. app-practable-dev
+   -  FQDN of the instance: app.practable.io/dev
+   -  generate two UUID to use as secrets for `book+relay`, and `jump` services (hint: use `uuidgen` command)
+   -  generate a static files repo for this instance (can populate with user interfaces later)
+   -  generate a booking manifest (can do later)
+-  customise the configuration 
+   -  edit the configuration script using the above information
+   -  run the script to produce custom installation files
+-  install the services
+   -  run a series of ansible playbooks (in a pre-defined order)
+-  administration tasks
+    -  (re)configure your experiments to point at this instance
+    -  upload your booking manifest
+    -  check system is working 
+    -  share booking links with users
+   
+   -  
+b/ generate secrets for the services
+c/ prepare a static files repo for use with the instance (must be customised with correct base path in user interfaces)
+d/ edit configuration script
+e/ produce customised service files for installation using configuration script
+f/ run ansible playbooks to install services 
+g/ populate services with data (such as experiment manifest)
+h/ (re)configure your experiments to connect to the instance
+
+See the README.md for each instance's installation & administration tools here:
+
+-  [dev](./dev/README.md)
+-  [ed0](./ed0/README.md)
 
 
 ## Appendix
