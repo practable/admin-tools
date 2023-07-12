@@ -1,6 +1,6 @@
 ---
 - name: install jump
-  hosts: development
+  hosts: ${ANSIBLE_GROUP}
   become: yes
   gather_facts: no
   vars_files:

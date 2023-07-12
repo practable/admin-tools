@@ -1,6 +1,6 @@
 ---
 - name: reload nginx config
-  hosts: development
+  hosts: ${ANSIBLE_GROUP}
   become: yes
     
   tasks:

@@ -1,6 +1,6 @@
 ---
 - name: install book
-  hosts: development
+  hosts: ${ANSIBLE_GROUP}
   become: yes
   gather_facts: no
   vars_files:
@@ -21,6 +21,7 @@
        repo: https://github.com/practable/book.git
        dest: /var/lib/practable/sources/book
        update: yes
+       version: main
 
    - name: book build
      command: ./build.sh

@@ -1,3 +1,57 @@
+# app.practable.io/dev
+
+
+The installation process has several steps
+
+-  gather / generate required information 
+   -  ansible inventory "group" name: e.g. app-practable-dev
+   -  FQDN of the instance: app.practable.io/dev
+   -  generate two UUID to use as secrets for `book+relay`, and `jump` services (hint: use `uuidgen` command)
+   -  generate a static files repo for this instance (can populate with user interfaces later)
+   -  generate a booking manifest (can do later)
+-  customise the configuration 
+   -  edit the configuration script using the above information
+   -  run the script to produce custom installation files
+-  install the services
+   -  run a series of ansible playbooks (in a pre-defined order)
+-  administration tasks
+    -  (re)configure your experiments to point at this instance
+    -  upload your booking manifest
+    -  check system is working 
+    -  share booking links with users
+   
+   -  
+b/ generate secrets for the services
+c/ prepare a static files repo for use with the instance (must be customised with correct base path in user interfaces)
+d/ edit configuration script
+e/ produce customised service files for installation using configuration script
+f/ run ansible playbooks to install services 
+g/ populate services with data (such as experiment manifest)
+h/ (re)configure your experiments to connect to the instance
+
+
+
+### Adding a new user interface based on vue.js
+
+-> compile with the instance base path
+-> add to static repo
+-> edit ./templates/nginx.conf.template to add support the vue router to the static server block, typically of the form
+
+```
+        location /static/info/spinner-2.0/ {
+            try_files $uri $uri/ $uri.html /info/spinner-2.0/;
+            index index.html;
+        }
+```		
+
+### Adding some other asset to static
+
+-> check in configuration.sh that you have included any new top-level directory in the list of directories 
+```
+export STATIC_SUB_DIRS="['config', 'images', 'info', 'ui']"
+```
+
+
 # gce-develop
 Documentation, files and scripts for setting up the system on gce
 

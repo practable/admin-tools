@@ -2,7 +2,7 @@
 # modified from https://gist.github.com/mattiaslundberg/ba214a35060d3c8603e9b1ec8627d349
 # to use certbot https://certbot.eff.org/instructions?ws=nginx&os=ubuntufocal
 - name: install nginx & let's encrypt
-  hosts: development
+  hosts: ${ANSIBLE_GROUP}
   become: yes
   gather_facts: no
 
@@ -45,7 +45,7 @@
       ignore_errors: yes
       
     - name: Run certbot
-      ansible.builtin.raw:  certbot --nginx --non-interactive --agree-tos --domains dev.practable.io --email admin@practable.io 
+      ansible.builtin.raw:  certbot --nginx --non-interactive --agree-tos --domains ${DOMAIN} --email ${EMAIL}
 
     - name: Verify Nginx config
       become: yes
