@@ -1,6 +1,126 @@
 # app.practable.io/dev
 
 
+The installation process has several steps, beginning with creating/collecting configuration information/secrets/files:
+
+## Generate files required by the instance
+
+   - secrets in directory (see [example](https://github.com/practable/credentials-example)
+       - `book.pat`
+	   - `jump.pat`
+	   - `relay.pat`
+       - `project` (the GCP project name)
+   - static files repo (see [example](https://github.com/practable/static-app-practable-io-dev-default)
+   - dev-static files repo (see [example](https://github.com/practable/static-app-practable-io-dev-dev)
+   - experiment manifest (see [example](https://github.com/practable/manifest-gce-develop) [TODO update to app-practable-90 version]
+   
+## Gather information on instance
+
+   - secrets directory (e.g. `~/secret/app.practable.io/dev`)
+   - GCP zone (e.g. europe-west2-c)
+   - GCP instance name (e.g. `instance-app-practable-dev`)
+   - instance path (e.g. `dev`)
+   - domain (e.g. `app.practable.io`)
+   - email (e.g. `rl.eng@ed.ac.uk`)
+   - ansible group for the instance (e.g. `app-practable-dev`)
+   - static file repo details (production versions of static files)
+       - repo name (e.g. `static-app-practable-io-dev-default`)
+	   - repo URL (e.g. `https://github.com/practable/static-app-practable-io-dev-default.git`)
+	   - list of sub-directories (excluding book) ( e.g. `"['config', 'images', 'info', 'ui']"`)
+   - dev-static file repo details (development versions of static files)
+       - repo name (e.g. `static-app-practable-io-dev-dev`)
+	   - repo URL (e.g. `https://github.com/practable/static-app-practable-io-dev-dev.git`)
+	   - list of sub-directories (excluding book) ( e.g. `"['config', 'images', 'info', 'ui']"`)   
+
+## Edit the configuration script
+
+Use the information gathered above
+
+```
+# Edit to suit your instance
+
+# Directory for services secrets (must contain book.pat, jump.pat, project, relay.pat)
+export SECRETS=~/secret/app.practable.io/dev
+
+# SSH access
+export ZONE=europe-west2-c
+export INSTANCE=instance-app-practable-dev
+
+# Networking info for services & ansible nginx conf
+export INSTANCE_PATH=dev
+# used in nginx configuration, including in the ansible playbook for setting up certbot
+export DOMAIN=app.practable.io
+# Used in ansible nginx playbook for setting up certbot
+export EMAIL=rl.eng@ed.ac.uk
+# used in all ansible playbook templates
+export ANSIBLE_GROUP=app-practable-dev
+
+# Static content: main/default content for the instance ("production" equivalent)
+export STATIC_REPO_NAME=static-app-practable-io-dev-default
+export STATIC_REPO_URL=https://github.com/practable/static-app-practable-io-dev-default.git
+# Note that book is deliberately not included in this list of sub-dirs
+export STATIC_SUB_DIRS="['config', 'images', 'info', 'ui']"
+
+# Static content: development versions on same server (TODO improve to let devs be self sufficient)
+export DEV_STATIC_REPO_NAME=static-app-practable-io-dev-dev
+export DEV_STATIC_REPO_URL=https://github.com/practable/static-app-practable-io-dev-dev.git
+# Note that book is deliberately not included in this list of sub-dirs
+export DEV_STATIC_SUB_DIRS="['config', 'images', 'info', 'ui']"
+```	
+
+## Run the configuration script
+
+```
+./configure.sh
+
+```
+
+Assuming this throws no errors, you can try logging in
+
+```
+./login.sh
+```
+
+If this works, then it is likely the playbooks will work, however if it does not, then you must fix the errors before proceeding. If you are not using GCP, then you will need to follow other steps (not provided) to allow `ansible` to administer your instance. If you can login, but ansible cannot find your instance, double check you didn't use hyphens in the group name because these are not supported.
+
+## Run the ansible playbooks
+
+The playbooks are generated from templates by `configure.sh`
+
+```
+cd ./playbooks
+ansible-playbook install-nginx.yml
+```
+
+
+
+
+
+	   
+-  generate secrets/files required by instance
+   - 
+   - 
+-  edit configuration script to include the required information, secrets, files
+-  run the configuration script
+-  try logging in with the generated script `login.sh`
+-  run the generated ansible playbooks
+
+/generate required information/data on/for instance
+-  customise the configuration 
+   -  edit the configuration script using the above information
+   -  run the script to produce custom installation files
+-  install the services
+   -  run a series of ansible playbooks (in a pre-defined order)
+-  administration tasks
+    -  (re)configure your experiments to point at this instance
+    -  upload your booking manifest
+    -  check system is working 
+    -  share booking links with users
+	
+	
+
+
+
 The installation process has several steps
 
 -  gather / generate required information 
@@ -411,4 +531,16 @@ This now works!
 ```
 curl -XPOST https://dev.practable.io/book/api/v1/users/unique
 {"user_name":"cf7uh06ot5usefi5tihg"}
+```
+
+
+## Appendix
+
+This is what a successful installation process looks like:
+
+```
+
+
+
+
 ```
