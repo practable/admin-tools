@@ -200,7 +200,7 @@ Create a VM
 -  identity and API access
     -  service accounts: Compute Enginer default service account
 	-  access scopes: allow default access
-	-  firewall: don't allow any traffic (load balancer will do it) **TODO - check this is correct**
+	-  firewall: allow http (else load balancer can't pass traffic)
 -  Advanced options (leave as default)
 
 For ed0
@@ -221,7 +221,7 @@ For ed0
 -  identity and API access
     -  service accounts: Compute Enginer default service account
 	-  access scopes: allow default access
-	-  firewall: don't allow any traffic (load balancer will do it) **TODO - check this is correct**
+	-  firewall: allow http (else load balancer can't pass traffic)
 -  Advanced options (leave as default)
 	
 
@@ -240,8 +240,8 @@ Create instance group (New unmanaged instance group) for dev
 -  VM Instances
     -  select VMs: instance-app-practable-dev
 -  Port mapping:
-    -  port name 1: https
-	-  port numbers 1: 443
+    -  port name 1: http
+	-  port numbers 1: 80
 
 
 
@@ -256,8 +256,8 @@ Create instance group (New unmanaged instance group) for ed0
 -  VM Instances
     -  select VMs: instance-app-practable-ed0
 -  Port mapping:
-    -  port name 1: https
-	-  port numbers 1: 443
+    -  port name 1: http
+	-  port numbers 1: 80
 
 
 ### Load Balancer
@@ -290,19 +290,19 @@ Create instance group (New unmanaged instance group) for ed0
 	    -  name: app-practable-dev-backend-service
 		-  description: backend service for app.practable.io/dev
 		-  backend type: instance group
-		-  protocol: https
-		-  named port: https
+		-  protocol: http
+		-  named port: http
 		-  timeout: 30 sec (default)
 		-  New Backend
 		    -  instance group: instance-group-app-practable-dev
-			-  port numbers: 443
+			-  port numbers: 80
 			-  balancing mode : utlization
 			-  Create Health Check
 			    -  name: app-practable-dev-health-check
 				-  description: health check for app.practable.io/dev backend service
 				-  region is set already and uneditable
-				-  protocol: https
-				-  port: 443
+				-  protocol: http
+				-  port: 80
 				-  proxy protocol: NONE
 				-  request path: / (TODO does this work?)
 				-  logs: off
@@ -311,12 +311,12 @@ Create instance group (New unmanaged instance group) for ed0
 	    -  name: app-practable-ed0-backend-service
 		-  description: backend service for app.practable.io/ed0
 		-  backend type: instance group
-		-  protocol: https
-		-  named port: https
+		-  protocol: http
+		-  named port: http
 		-  timeout: 30 sec (default)
 		-  New Backend
 		    -  instance group: instance-group-app-practable-ed0
-			-  port numbers: 443
+			-  port numbers: 80
 			-  balancing mode : utlization
 			-  Create Health Check
 			    -  name: app-practable-ed0-health-check
@@ -455,250 +455,8 @@ See the README.md for each instance's installation & administration tools here:
 
 ## Appendix
 
-## Equivalent commands/codes/REST
 
-### Instance (Terraform)
-
-
-```
-# This code is compatible with Terraform 4.25.0 and versions that are backwards compatible to 4.25.0.
-# For information about validating this Terraform code, see https://developer.hashicorp.com/terraform/tutorials/gcp-get-started/google-cloud-platform-build#format-and-validate-the-configuration
-
-resource "google_compute_instance" "instance-app-practable-dev" {
-  boot_disk {
-    auto_delete = false
-    device_name = "instance-app-practable-dev"
-
-    initialize_params {
-      image = "projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20230628"
-      size  = 10
-      type  = "pd-balanced"
-    }
-
-    mode = "READ_WRITE"
-  }
-
-  can_ip_forward      = false
-  deletion_protection = false
-  enable_display      = false
-
-  labels = {
-    goog-ec-src = "vm_add-tf"
-  }
-
-  machine_type = "e2-small"
-  name         = "instance-app-practable-dev"
-
-  network_interface {
-    access_config {
-      network_tier = "PREMIUM"
-    }
-
-    subnetwork = "projects/redacted/regions/europe-west2/subnetworks/default"
-  }
-
-  scheduling {
-    automatic_restart   = true
-    on_host_maintenance = "MIGRATE"
-    preemptible         = false
-    provisioning_model  = "STANDARD"
-  }
-
-  service_account {
-    email  = "redacted-compute@developer.gserviceaccount.com"
-    scopes = ["https://www.googleapis.com/auth/devstorage.read_only", "https://www.googleapis.com/auth/logging.write", "https://www.googleapis.com/auth/monitoring.write", "https://www.googleapis.com/auth/service.management.readonly", "https://www.googleapis.com/auth/servicecontrol", "https://www.googleapis.com/auth/trace.append"]
-  }
-
-  shielded_instance_config {
-    enable_integrity_monitoring = true
-    enable_secure_boot          = false
-    enable_vtpm                 = true
-  }
-
-  zone = "europe-west2-c"
-}
-```
-
-### Instance groups (gcloud)
-
-gcloud command lines:
-```
-gcloud compute instance-groups unmanaged create instance-group-app-practable-dev --project=some-project-000000 --description=Instance\ group\ for\ backend\ of\ app.practable.io/dev --zone=europe-west2-c
-￼
-$
-gcloud compute instance-groups unmanaged set-named-ports instance-group-app-practable-dev --project=some-project-000000 --zone=europe-west2-c --named-ports=https:443
-￼
-$
-gcloud compute instance-groups unmanaged add-instances instance-group-app-practable-dev --project=some-project-000000 --zone=europe-west2-c --instances=instance-app-practable-dev
-```
-
-
-
-
-### Load Balancer (REST)
-
-```
-POST https://dev-compute.sandbox.googleapis.com/compute/beta/projects/some-project-000000/regions/europe-west2/healthChecks
-{
-  "checkIntervalSec": 5,
-  "description": "health check for app.practable.io/dev backend service",
-  "healthyThreshold": 2,
-  "httpsHealthCheck": {
-    "host": "",
-    "port": 443,
-    "proxyHeader": "NONE",
-    "requestPath": "/"
-  },
-  "logConfig": {
-    "enable": false
-  },
-  "name": "app-practable-dev-health-check",
-  "region": "projects/some-project-000000/regions/europe-west2",
-  "timeoutSec": 5,
-  "type": "HTTPS",
-  "unhealthyThreshold": 2
-}
-
-POST https://compute.googleapis.com/compute/v1/projects/some-project-000000/regions/europe-west2/backendServices
-{
-  "backends": [
-    {
-      "balancingMode": "UTILIZATION",
-      "capacityScaler": 1,
-      "group": "projects/some-project-000000/zones/europe-west2-c/instanceGroups/instance-group-app-practable-dev",
-      "maxUtilization": 0.8
-    }
-  ],
-  "connectionDraining": {
-    "drainingTimeoutSec": 300
-  },
-  "description": "backend service for app.practable.io/dev",
-  "enableCDN": false,
-  "healthChecks": [
-    "projects/some-project-000000/regions/europe-west2/healthChecks/app-practable-dev-health-check"
-  ],
-  "loadBalancingScheme": "EXTERNAL_MANAGED",
-  "localityLbPolicy": "ROUND_ROBIN",
-  "name": "app-practable-dev-backend-service",
-  "portName": "https",
-  "protocol": "HTTPS",
-  "region": "projects/some-project-000000/regions/europe-west2",
-  "sessionAffinity": "NONE",
-  "timeoutSec": 30
-}
-
-POST https://dev-compute.sandbox.googleapis.com/compute/beta/projects/some-project-000000/regions/europe-west2/healthChecks
-{
-  "checkIntervalSec": 5,
-  "description": "health check for app.practable.io/ed0 backend service",
-  "healthyThreshold": 2,
-  "httpsHealthCheck": {
-    "host": "",
-    "port": 443,
-    "proxyHeader": "NONE",
-    "requestPath": "/"
-  },
-  "logConfig": {
-    "enable": false
-  },
-  "name": "app-practable-ed0-health-check",
-  "region": "projects/some-project-000000/regions/europe-west2",
-  "timeoutSec": 5,
-  "type": "HTTPS",
-  "unhealthyThreshold": 2
-}
-
-POST https://compute.googleapis.com/compute/v1/projects/some-project-000000/regions/europe-west2/backendServices
-{
-  "backends": [
-    {
-      "balancingMode": "UTILIZATION",
-      "capacityScaler": 1,
-      "group": "projects/some-project-000000/zones/europe-west2-c/instanceGroups/instance-group-app-practable-ed0",
-      "maxUtilization": 0.8
-    }
-  ],
-  "connectionDraining": {
-    "drainingTimeoutSec": 300
-  },
-  "description": "backend service for app.practable.io/ed0",
-  "enableCDN": false,
-  "healthChecks": [
-    "projects/some-project-000000/regions/europe-west2/healthChecks/app-practable-ed0-health-check"
-  ],
-  "loadBalancingScheme": "EXTERNAL_MANAGED",
-  "localityLbPolicy": "ROUND_ROBIN",
-  "name": "app-practable-ed0-backend-service",
-  "portName": "https",
-  "protocol": "HTTPS",
-  "region": "projects/some-project-000000/regions/europe-west2",
-  "sessionAffinity": "NONE",
-  "timeoutSec": 30
-}
-
-POST https://compute.googleapis.com/compute/v1/projects/some-project-000000/regions/europe-west2/urlMaps
-{
-  "defaultService": "projects/some-project-000000/regions/europe-west2/backendServices/app-practable-dev-backend-service",
-  "hostRules": [
-    {
-      "hosts": [
-        "app.practable.io"
-      ],
-      "pathMatcher": "path-matcher-1"
-    }
-  ],
-  "name": "app-practable-load-balancer",
-  "pathMatchers": [
-    {
-      "defaultService": "projects/some-project-000000/regions/europe-west2/backendServices/app-practable-dev-backend-service",
-      "name": "path-matcher-1",
-      "pathRules": [
-        {
-          "paths": [
-            "/dev/*"
-          ],
-          "service": "projects/some-project-000000/regions/europe-west2/backendServices/app-practable-dev-backend-service"
-        },
-        {
-          "paths": [
-            "/ed0/*"
-          ],
-          "service": "projects/some-project-000000/regions/europe-west2/backendServices/app-practable-ed0-backend-service"
-        }
-      ]
-    }
-  ],
-  "region": "projects/some-project-000000/regions/europe-west2"
-}
-
-POST https://compute.googleapis.com/compute/v1/projects/some-project-000000/regions/europe-west2/targetHttpsProxies
-{
-  "name": "app-practable-load-balancer-target-proxy",
-  "region": "projects/some-project-000000/regions/europe-west2",
-  "sslCertificates": [
-    "projects/some-project-000000/regions/europe-west2/sslCertificates/wildcard-practable-ssl-lets-encrypt"
-  ],
-  "urlMap": "projects/some-project-000000/regions/europe-west2/urlMaps/app-practable-load-balancer"
-}
-
-POST https://compute.googleapis.com/compute/v1/projects/some-project-000000/regions/europe-west2/forwardingRules
-{
-  "IPAddress": "projects/some-project-000000/regions/europe-west2/addresses/app-practable-external-ip",
-  "IPProtocol": "TCP",
-  "loadBalancingScheme": "EXTERNAL_MANAGED",
-  "name": "app-practable-https-port",
-  "network": "projects/some-project-000000/global/networks/default",
-  "networkTier": "STANDARD",
-  "portRange": "443",
-  "region": "projects/some-project-000000/regions/europe-west2",
-  "target": "projects/some-project-000000/regions/europe-west2/targetHttpsProxies/app-practable-load-balancer-target-proxy"
-}
-
-```
-
-# Original README.md 
-
-# admin-tools
+### Original README.md for admin-tools
 
 This repo contains scripts to help administer our two currently-running systems.
 

@@ -19,6 +19,7 @@ The installation process has several steps, beginning with creating/collecting c
    - secrets directory (e.g. `~/secret/app.practable.io/dev`)
    - GCP zone (e.g. europe-west2-c)
    - GCP instance name (e.g. `instance-app-practable-dev`)
+   - backend service (e.g. `app-practable-dev-backend-service`)
    - instance path (e.g. `dev`)
    - domain (e.g. `app.practable.io`)
    - email (e.g. `rl.eng@ed.ac.uk`)
@@ -45,6 +46,9 @@ export SECRETS=~/secret/app.practable.io/dev
 # SSH access
 export ZONE=europe-west2-c
 export INSTANCE=instance-app-practable-dev
+
+# Health check info
+export BACKEND_SERVICE=app-practable-dev-backend-service
 
 # Networking info for services & ansible nginx conf
 export INSTANCE_PATH=dev

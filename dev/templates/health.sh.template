@@ -1,0 +1,2 @@
+#/bin/bash
+gcloud compute backend-services get-health ${BACKEND_SERVICE} --project "${PROJECT}"
