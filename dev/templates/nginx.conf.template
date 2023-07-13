@@ -34,9 +34,9 @@ http {
         server_name $DOMAIN;
         root /var/www/$DOMAIN;
 
-        location / { #for health check 
-           try_files $uri /$uri /dev/index.html;
-        }
+        #location / { #for health check 
+        #   try_files $uri $uri/ /index.html;
+        #}
 		
         location /$INSTANCE_PATH/ {
 
@@ -58,13 +58,13 @@ http {
            }
 
            add_header Access-Control-Allow-Origin *;
-           try_files $uri /$uri /index.html;
+           try_files $uri $uri/ /$INSTANCE_PATH/index.html;
         }
 
 
         location /$INSTANCE_PATH/static/ {
 
-          try_files $uri /$uri /static/index.html;
+          try_files $uri $uri/ /static/index.html;
         }
 
         location /$INSTANCE_PATH/static/ui/analytics-pend-1.0/ {
@@ -220,7 +220,7 @@ http {
 
      	location /$INSTANCE_PATH/book/ {
 	       add_header Access-Control-Allow-Origin *;
-    	   try_files $uri /$uri /book/index.html;
+    	   try_files $uri $uri/ /$INSTANCE_PATH/book/index.html;
     	}
 
         location /$INSTANCE_PATH/book/api/ {

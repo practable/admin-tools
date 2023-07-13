@@ -304,7 +304,7 @@ Create instance group (New unmanaged instance group) for ed0
 				-  protocol: http
 				-  port: 80
 				-  proxy protocol: NONE
-				-  request path: / (TODO does this work?)
+				-  request path: `/dev/` #note default / makes nginx config difficult for vue routing
 				-  logs: off
 				-  health criteria: leave as default
     -  Create backend service
@@ -325,7 +325,7 @@ Create instance group (New unmanaged instance group) for ed0
 				-  protocol: https
 				-  port: 443
 				-  proxy protocol: NONE
-				-  request path: / (TODO does this work?)
+				-  request path: `/ed0` #note default / makes nginx config difficult for vue routing
 				-  logs: off
 				-  health criteria: leave as default        	
  
