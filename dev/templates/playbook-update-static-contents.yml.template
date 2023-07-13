@@ -16,13 +16,13 @@
        
    - name: Create a directory for static files if it does not exist
      ansible.builtin.file:
-       path: "/var/www/{{ domain }}/static"
+       path: "/var/www/{{ domain }}/{{ instance_path }}/static"
        state: directory
        mode: '0755'
        
    - name: Create a directory for dev-static files if it does not exist
      ansible.builtin.file:
-       path: "/var/www/{{ domain }}/dev-static"
+       path: "/var/www/{{ domain }}/{{ instance_path }}/dev-static"
        state: directory
        mode: '0755'   
      
@@ -46,20 +46,20 @@
    - name: Create symbolic link for /dev/static/index.html
      ansible.builtin.file:
        src:  "/var/www/git/{{ static_repo_name }}/index.html"
-       dest: "/var/www/{{ domain }}/index.html"
+       dest: "/var/www/{{ domain }}/{{ instance_path }}/static/index.html"
        state: link
        
    - name: Create symbolic links for static sub-directories
      ansible.builtin.file:
        src:  "/var/www/git/{{ static_repo_name }}/{{ item }}"
-       dest: "/var/www/{{ domain }}/static/{{ item }}"
+       dest: "/var/www/{{ domain }}/{{ instance_path }}/static/{{ item }}"
        state: link
      loop: "{{ static_sub_dirs }}"
 
    - name: Create a symbolic link for book app
      ansible.builtin.file:
        src:  "/var/www/git/{{ static_repo_name }}/book"
-       dest: "/var/www/{{ domain }}/book"
+       dest: "/var/www/{{ domain }}/{{ instance_path }}/book"
        state: link
        
    - name: Git checkout dev-static repo
@@ -70,7 +70,7 @@
    - name: Create a symbolic links for static sub-directories
      ansible.builtin.file:
        src:  "/var/www/git/{{ dev_static_repo_name }}/{{ item }}"
-       dest: "/var/www/{{ domain }}/dev-static/{{ item }}"
+       dest: "/var/www/{{ domain }}/{{ instance_path }}/dev-static/{{ item }}"
        state: link
      loop: "{{ static_sub_dirs }}"
 

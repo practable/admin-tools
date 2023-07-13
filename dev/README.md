@@ -35,42 +35,8 @@ The installation process has several steps, beginning with creating/collecting c
 
 ## Edit the configuration script
 
-Use the information gathered above
+Use the information gathered above to populate the values for the environment variables at the top of the file. The environment variables are passed to `envsubst` to populate the templates for `nginx`, the `systemd` services, and the ansible playbooks.
 
-```
-# Edit to suit your instance
-
-# Directory for services secrets (must contain book.pat, jump.pat, project, relay.pat)
-export SECRETS=~/secret/app.practable.io/dev
-
-# SSH access
-export ZONE=europe-west2-c
-export INSTANCE=instance-app-practable-dev
-
-# Health check info
-export BACKEND_SERVICE=app-practable-dev-backend-service
-
-# Networking info for services & ansible nginx conf
-export INSTANCE_PATH=dev
-# used in nginx configuration, including in the ansible playbook for setting up certbot
-export DOMAIN=app.practable.io
-# Used in ansible nginx playbook for setting up certbot
-export EMAIL=rl.eng@ed.ac.uk
-# used in all ansible playbook templates
-export ANSIBLE_GROUP=app-practable-dev
-
-# Static content: main/default content for the instance ("production" equivalent)
-export STATIC_REPO_NAME=static-app-practable-io-dev-default
-export STATIC_REPO_URL=https://github.com/practable/static-app-practable-io-dev-default.git
-# Note that book is deliberately not included in this list of sub-dirs
-export STATIC_SUB_DIRS="['config', 'images', 'info', 'ui']"
-
-# Static content: development versions on same server (TODO improve to let devs be self sufficient)
-export DEV_STATIC_REPO_NAME=static-app-practable-io-dev-dev
-export DEV_STATIC_REPO_URL=https://github.com/practable/static-app-practable-io-dev-dev.git
-# Note that book is deliberately not included in this list of sub-dirs
-export DEV_STATIC_SUB_DIRS="['config', 'images', 'info', 'ui']"
-```	
 
 ## Run the configuration script
 
@@ -94,9 +60,24 @@ The playbooks are generated from templates by `configure.sh`
 ```
 cd ./playbooks
 ansible-playbook install-nginx.yml
+ansible-playbook update-static-contents.yml
 ```
 
+At this point, you should be able to do a successful health check 
 
+```
+./health.sh
+```
+
+If that is working, then carry on with the rest of the install
+
+```
+ansible-playbook install-book.yml 
+ansible-playbook install-jump.yml 
+ansible-playbook install-relay.yml 
+```
+
+## Set up the booking manifest
 
 
 

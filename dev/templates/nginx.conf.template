@@ -35,7 +35,7 @@ http {
         root /var/www/$DOMAIN;
 
         location / { #for health check 
-           try_files $uri /$uri /index.html;
+           try_files $uri /$uri /dev/index.html;
         }
 		
         location /$INSTANCE_PATH/ {
@@ -64,46 +64,46 @@ http {
 
         location /$INSTANCE_PATH/static/ {
 
-          try_files $uri /$uri /index.html;
+          try_files $uri /$uri /static/index.html;
         }
 
         location /$INSTANCE_PATH/static/ui/analytics-pend-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/analytics-pend-1.0/;
+            try_files $uri $uri/ $uri.html /static/ui/analytics-pend-1.0/;
             index index.html;
         }
 		
         location /$INSTANCE_PATH/static/ui/analytics-spin-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/analytics-spin-1.0/;
+            try_files $uri $uri/ $uri.html /static/ui/analytics-spin-1.0/;
             index index.html;
         }
 		
         location /$INSTANCE_PATH/static/ui/camera-test-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/camera-test-1.0/;
+            try_files $uri $uri/ $uri.html /static/ui/camera-test-1.0/;
             index index.html;
         }
 
         location /$INSTANCE_PATH/static/ui/debug-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/debug-1.0/;
+            try_files $uri $uri/ $uri.html /static/ui/debug-1.0/;
             index index.html;
         }
 
         location /$INSTANCE_PATH/static/ui/governor-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/governor-1.0/;
+            try_files $uri $uri/ $uri.html /static/ui/governor-1.0/;
             index index.html;
         }
 
         location /$INSTANCE_PATH/static/ui/penduino-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/penduino-1.0/;
+            try_files $uri $uri/ $uri.html /static/ui/penduino-1.0/;
             index index.html;
         }
 
         location /$INSTANCE_PATH/static/ui/pvna-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/pvna-1.0/;
+            try_files $uri $uri/ $uri.html /static/ui/pvna-1.0/;
             index index.html;
         }
 
 	    location /$INSTANCE_PATH/static/ui/spinner-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/spinner-1.0/;
+            try_files $uri $uri/ $uri.html /static/ui/spinner-1.0/;
             index index.html;
         }
 
@@ -118,27 +118,27 @@ http {
         }
 
         location /$INSTANCE_PATH/static/ui/simple-spinner-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/simple-spinner-1.0/;
+            try_files $uri $uri/ $uri.html /static/ui/simple-spinner-1.0/;
             index index.html;
         }
 
         location /$INSTANCE_PATH/static/ui/spinner-2.0/ {
-            try_files $uri $uri/ $uri.html /ui/spinner-2.0/;
+            try_files $uri $uri/ $uri.html /static/ui/spinner-2.0/;
             index index.html;
         }
 
         location /$INSTANCE_PATH/static/ui/spinner-sim-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/spinner-sim-1.0/;
+            try_files $uri $uri/ $uri.html /static/ui/spinner-sim-1.0/;
             index index.html;
         }
 
         location /$INSTANCE_PATH/static/ui/truss-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/truss-1.0/;
+            try_files $uri $uri/ $uri.html /static/ui/truss-1.0/;
             index index.html;
         }
 
         location /$INSTANCE_PATH/static/ui/truss-noforce-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/truss-noforce-1.0/;
+            try_files $uri $uri/ $uri.html /static/ui/truss-noforce-1.0/;
             index index.html;
         }
 
@@ -153,7 +153,7 @@ http {
         }
 
         location /$INSTANCE_PATH/static/ui/turner-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/turner-1.0/;
+            try_files $uri $uri/ $uri.html /static/ui/turner-1.0/;
             index index.html;
         }
 
@@ -164,57 +164,57 @@ http {
         }
 
      	location /$INSTANCE_PATH/dev-static/ui/camera-test-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/camera-test-1.0/;
+            try_files $uri $uri/ $uri.html /dev-static/ui/camera-test-1.0/;
             index index.html;
         }
 
         location /$INSTANCE_PATH/dev-static/ui/debug-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/debug-1.0/;
+            try_files $uri $uri/ $uri.html /dev-static/ui/debug-1.0/;
             index index.html;
         }
 
         location /$INSTANCE_PATH/dev-static/dev-static/ui/governor-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/governor-1.0/;
+            try_files $uri $uri/ $uri.html /dev-static/ui/governor-1.0/;
             index index.html;
         }
 
     	location /$INSTANCE_PATH/dev-static/ui/penduino-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/penduino-1.0/;
+            try_files $uri $uri/ $uri.html /dev-static/ui/penduino-1.0/;
             index index.html;
         }
 
         location /$INSTANCE_PATH/dev-static/ui/pvna-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/pvna-1.0/;
+            try_files $uri $uri/ $uri.html /dev-static/ui/pvna-1.0/;
             index index.html;
         }
 
         location /$INSTANCE_PATH/dev-static/ui/spinner-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/spinner-1.0/;
+            try_files $uri $uri/ $uri.html /dev-static/ui/spinner-1.0/;
             index index.html;
         }
 
         location /$INSTANCE_PATH/dev-static/ui/spinner-2.0/ {
-            try_files $uri $uri/ $uri.html /ui/spinner-2.0/;
+            try_files $uri $uri/ $uri.html /dev-static/ui/spinner-2.0/;
             index index.html;
         }
 
 	    location /$INSTANCE_PATH/dev-static/ui/spinner-sim-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/spinner-sim-1.0/;
+            try_files $uri $uri/ $uri.html /dev-static/ui/spinner-sim-1.0/;
             index index.html;
 		}
 
         location /$INSTANCE_PATH/dev-static/ui/turner-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/turner-1.0/;
+            try_files $uri $uri/ $uri.html /dev-static/ui/turner-1.0/;
             index index.html;
         }
 
 	    location /$INSTANCE_PATH/dev-static/ui/truss-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/truss-1.0/;
+            try_files $uri $uri/ $uri.html /dev-static/ui/truss-1.0/;
             index index.html;
         }
 
         location /$INSTANCE_PATH/dev-static/ui/truss-noforce-1.0/ {
-            try_files $uri $uri/ $uri.html /ui/truss-noforce-1.0/;
+            try_files $uri $uri/ $uri.html /dev-static/ui/truss-noforce-1.0/;
             index index.html;
         }
 
