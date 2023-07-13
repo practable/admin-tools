@@ -1,5 +1,6 @@
 ---
 domain: $DOMAIN
+instance_path: $INSTANCE_PATH
 static_repo_name: $STATIC_REPO_NAME
 static_repo_url: $STATIC_REPO_URL
 static_sub_dirs: $STATIC_SUB_DIRS
