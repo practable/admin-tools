@@ -34,9 +34,9 @@ http {
         server_name $DOMAIN;
         root /var/www/$DOMAIN;
 
-        #location / { #for health check 
-        #   try_files $uri $uri/ /index.html;
-        #}
+        location / { 
+           try_files $uri $uri/ /index.html;
+        }
 		
         location /$INSTANCE_PATH/ {
 

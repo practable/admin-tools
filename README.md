@@ -260,7 +260,45 @@ Create instance group (New unmanaged instance group) for ed0
 	-  port numbers 1: 80
 
 
-### Load Balancer
+### Load Balancers
+
+Try the terraform [https-redirect](https://github.com/terraform-google-modules/terraform-google-lb-http/tree/master/examples/https-redirect) example.
+
+Edit the region in `variables.tf` to `europe-west2`
+
+Follow instructions in README for setting current project in gcloud, then running terraform.
+
+Inspect via console - using classic load balancers.
+
+Test in browser (note using the uoe.practable.io domain temporarily)
+
+```
+curl -v http://uoe.practable.io
+*   Trying 34.117.39.146:80...
+* TCP_NODELAY set
+* Connected to uoe.practable.io (34.117.39.146) port 80 (#0)
+> GET / HTTP/1.1
+> Host: uoe.practable.io
+> User-Agent: curl/7.68.0
+> Accept: */*
+> 
+* Mark bundle as not supporting multiuse
+< HTTP/1.1 301 Moved Permanently
+< Cache-Control: private
+< Location: https://uoe.practable.io:443/
+< Content-Length: 0
+< Date: Fri, 14 Jul 2023 11:42:50 GMT
+< Content-Type: text/html; charset=UTF-8
+< 
+* Connection #0 to host uoe.practable.io left intact
+```
+
+That works - so copy files from example to ./terraform/https-redirect and try again outside original repo
+
+
+#### Did not work - no redirects on http,
+
+##### HTTPS load balancer
 
 - Application load balancer (HTTP/S)
 - From internet to my VMs or serviceless services
@@ -272,19 +310,22 @@ Create instance group (New unmanaged instance group) for ed0
     -  name: app-practable-proxy-only-subnet
 	-  ip address range: 10.0.0.0/24
 - Frontend Configuration
-    - name app-practable-https-port
-	- Protocol: HTTPS( includes HTTP/2)
-	- Port: 443
-    - create new static IP address
-        - name: app-practable-external-ip
-    	- description: External IP for app-practable load balancer	
-    - create ssl cert using cert and private key from let's encrypt 
-        -  name wildcard-practable-ssl-lets-encrypt
-    	-  description Let's encrypt ssl wildcard practable.io
-    	- add cert from `~/sources/admin-tools-legacy/aws/ssl/tmp/live/practable.io/fullchain.pem`
-    	- add key from `~/sources/admin-tools-legacy/aws/ssl/tmp/live/practable.io/privkey.pem`
-        -  (TODO - how to update when expired?)
-     -  Additional certificates: just leave as GCP default		
+    - https  
+        - name app-practable-https-port
+	    - Protocol: HTTPS( includes HTTP/2)
+	    - Port: 443
+        - create new static IP address
+            - name: app-practable-external-ip
+        	- description: External IP for app-practable load balancer	
+        - create ssl cert using cert and private key from let's encrypt 
+            -  name wildcard-practable-ssl-lets-encrypt
+        	-  description Let's encrypt ssl wildcard practable.io
+        	- add cert from `~/sources/admin-tools-legacy/aws/ssl/tmp/live/practable.io/fullchain.pem`
+        	- add key from `~/sources/admin-tools-legacy/aws/ssl/tmp/live/practable.io/privkey.pem`
+            -  (TODO - how to update when expired?)
+        -  Additional certificates: just leave as GCP default	
+	 
+	 
 - Backend configuration
     -  Create backend service
 	    -  name: app-practable-dev-backend-service
@@ -343,6 +384,70 @@ Create instance group (New unmanaged instance group) for ed0
 	    -  Path 3: /ed0/*
 	    -  Backend 3: app-practable-ed0-backend-service	
 		
+#### HTTP redirect load balancer		
+
+See [here](https://cloud.google.com/load-balancing/docs/https/setting-up-reg-http-https-redirect)
+
+This cannot be created in the google cloud console, so we can use glcoud. We could have used the terraform module but we already havea load balancer in place.
+
+The steps below create an internal HTTP(S) load balancer, and then throws an error on access to region 2, so try this:
+Create a new external regional load balancer, accept default port 80 frontend, and supply it with dev as a backend, and add no routing rules.
+
+
+ensure working on correct project
+```
+gcloud config set project some-project-000000
+```
+
+import map:
+```
+$ gcloud compute url-maps import web-map-http \
+       --source ./gcp/web-map-http.yaml \
+       --region=europe-west2
+	   
+       
+```
+check map:
+```
+$ gcloud compute url-maps describe web-map-http \
+        --region=europe-west2
+```
+create new target HTTP proxy
+```
+$ gcloud compute target-http-proxies create http-lb-proxy \
+    --url-map=web-map-http \
+    --region=europe-west2
+```
+
+create a forwarding rule
+
+```
+gcloud compute forwarding-rules create http-content-rule \
+    --load-balancing-scheme=EXTERNAL_MANAGED \
+    --address=app-practable-external-ip \
+    --network-tier=STANDARD \
+    --region=europe-west2￼ \
+    --target-http-proxy=http-lb-proxy \
+    --target-http-proxy-region=europe-west2￼ \
+    --ports=80
+```
+
+Throws an error - oh dear!
+
+Check anyway....
+
+```
+gcloud compute addresses describe app-practable-external-ip \
+    --format="get(address)" \
+    --region=europe-west2
+
+```
+
+```
+$ curl -v http://app.practable.io/dev/
+#times out
+
+```
 
 ### Update DNS 
 
