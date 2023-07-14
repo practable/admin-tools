@@ -295,6 +295,44 @@ curl -v http://uoe.practable.io
 
 That works - so copy files from example to ./terraform/https-redirect and try again outside original repo
 
+### two-instances-with-lb
+
+combining the infrastructure into a single directory
+
+SSL cert required - have symlinked for future convenience.
+
+The `pem` certificate is just the `cert.crt` with the `cert.ca-bundle` appended 
+
+Check with 
+```
+openssl storeutl -noout -certs ssl-cert.pem
+```
+
+If this throws an error, so will terraform. Check you don't have the end of the first and start of the second certs run together on the same line.
+
+
+```
+ln -s /home/some_user/secret/ssl/star_example_org.pem ./ssl-cert.pem 
+ln -s /home/some_user/secret/ssl/star_example_org.key ./ssl-cert.key
+```
+
+```
+  # create symlink in project dir to actual key & cert
+  private_key = file("${path.module}/ssl-cert.key")
+  certificate = file("${path.module}/ssl-cert.crt")
+```
+
+wrinkle - to update the cert
+
+0. modify the `main.tf`
+   - comment out the certificate
+   - see comments in load balancer definition - turn off ssl 
+1. terraform apply
+2. modify `main.tf`
+   - uncomment the certificate
+   - turn ssl back on for the load balancer
+   
+   
 
 #### Did not work - no redirects on http,
 

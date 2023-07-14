@@ -22,6 +22,14 @@ provider "google-beta" {
   project = var.project
 }
 
+# comment out to update cert (also modify load balancer to not use ssl, temporarily)
+resource "google_compute_ssl_certificate" "certificate-1" {
+  name        = "${var.network_name}-cert"
+  # create symlinks in project dir to actual key & cert
+  private_key = file("${path.module}/ssl-cert.key")
+  certificate = file("${path.module}/ssl-cert.pem")
+}
+
 resource "google_compute_network" "default" {
   name                    = var.network_name
   auto_create_subnetworks = false
@@ -98,9 +106,14 @@ module "gce-lb-http" {
   project              = var.project
   target_tags          = [var.network_name]
   firewall_networks    = [google_compute_network.default.name]
+  # uncomment below when replacing ssl cert (it can't be in use)
+  #ssl                  = false
+  #use_ssl_certificates = false
+  # uncomment below for normal operation with cert
   ssl                  = true
-  ssl_certificates     = [google_compute_ssl_certificate.example.self_link]
+  ssl_certificates     = [google_compute_ssl_certificate.certificate-1.self_link]
   use_ssl_certificates = true
+  
   https_redirect       = true
 
   backends = {
