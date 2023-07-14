@@ -66,6 +66,45 @@ data "template_file" "group-startup-script" {
   }
 }
 
+data "google_compute_image" "ubuntu_image" {
+  family  = "ubuntu-2004-lts"
+  project = "ubuntu-os-cloud"
+}
+
+resource "google_compute_instance" "dev_vm" {
+  name         = "dev-vm"
+  machine_type = "e2-small"
+  zone         = "europe-west2-c"
+  boot_disk {
+    initialize_params {
+      image = data.google_compute_image.ubuntu_image.self_link
+    }
+  }
+
+  network_interface {
+    network = "default"
+  }
+}
+
+resource "google_compute_instance_group" "dev" {
+  name        = "instance-group-dev"
+  description = "instance group for dev path"
+
+  instances = [
+    google_compute_instance.dev_vm.id
+  ]
+
+  named_port {
+    name = "http"
+    port = "80"
+  }
+
+  zone = "europe-west2-c"
+}
+
+
+
+
 module "mig_template" {
   source     = "terraform-google-modules/vm/google//modules/instance_template"
   version    = "~> 7.9"
@@ -142,6 +181,32 @@ module "gce-lb-http" {
         enable = false
       }
     }
+    dev = {
+      protocol    = "HTTP"
+      port        = 80
+      port_name   = "http"
+      timeout_sec = 10
+      enable_cdn  = false
+
+      health_check = {
+        request_path = "/dev/"
+        port         = 80
+      }
+
+      log_config = {
+        enable = false
+      }
+
+      groups = [
+        {
+          group = google_compute_instance_group.dev.id
+        }
+      ]
+      iap_config = {
+        enable = false
+      }
+    }
+
   }
 }
 # [END cloudloadbalancing_ext_http_gce_http_redirect]
