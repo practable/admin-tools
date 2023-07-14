@@ -23,5 +23,5 @@ variable "network_name" {
 }
 
 variable "project" {
-  default = app-practable-io-alpha
+  default = "app-practable-io-alpha"
 }
