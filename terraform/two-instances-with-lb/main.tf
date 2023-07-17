@@ -72,7 +72,7 @@ data "google_compute_image" "ubuntu_image" {
 }
 
 resource "google_compute_instance" "dev_vm" {
-  name         = "dev-vm"
+  name         = "app-practable-io-alpha-dev"
   machine_type = "e2-small"
   zone         = "europe-west2-c"
   boot_disk {
@@ -90,10 +90,8 @@ resource "google_compute_instance_group" "dev" {
   name        = "instance-group-dev"
   description = "instance group for dev path"
 
-  instances = [
-    google_compute_instance.dev_vm.id
-  ]
-
+  instances =  ["${google_compute_instance.dev_vm.self_link}"] #https://stackoverflow.com/questions/65313133/error-invalid-instance-urls-resource-google-compute-instance-group-t-compute
+  
   named_port {
     name = "http"
     port = "80"
@@ -101,8 +99,6 @@ resource "google_compute_instance_group" "dev" {
 
   zone = "europe-west2-c"
 }
-
-
 
 
 module "mig_template" {
@@ -137,7 +133,23 @@ module "mig" {
   subnetwork = google_compute_subnetwork.default.self_link
 }
 
-# [START cloudloadbalancing_ext_http_gce_http_redirect]
+
+resource "google_compute_backend_service" "dev" {
+  name          = "backend-service-dev"
+  health_checks = [google_compute_health_check.default.id]
+  load_balancing_scheme = "EXTERNAL_MANAGED"
+}
+
+resource "google_compute_health_check" "default" {
+  name = "health-check"
+  http_health_check {
+    port = 80
+	request_path       = "/dev/"
+  }
+}
+
+
+## [START cloudloadbalancing_ext_http_gce_http_redirect]
 module "gce-lb-http" {
   source               = "GoogleCloudPlatform/lb-http/google"
   version           = "~> 9.0"
@@ -152,8 +164,11 @@ module "gce-lb-http" {
   ssl                  = true
   ssl_certificates     = [google_compute_ssl_certificate.certificate-1.self_link]
   use_ssl_certificates = true
-  
   https_redirect       = true
+
+  # see https://cloud.google.com/load-balancing/docs/https/ext-http-lb-tf-module-examples
+  url_map           = google_compute_url_map.urlmap.self_link
+  create_url_map    = false
 
   backends = {
     default = {
@@ -210,3 +225,38 @@ module "gce-lb-http" {
   }
 }
 # [END cloudloadbalancing_ext_http_gce_http_redirect]
+
+
+
+## TODO
+## Get backend names for use in the URL map, so specify outside the load balancer?
+## Figure out how to make the URL map from before ...
+
+## investigating the terraform plan outputs shows that
+## backend name(s) are "ci-https-redirect-backend-dev"
+
+resource "google_compute_url_map" "urlmap" {
+  name        = "urlmap"
+  description = "a description"
+
+  default_service =  module.gce-lb-http.backend_services["default"].self_link
+
+  host_rule {
+    hosts        = ["app.practable.io"]
+    path_matcher = "allpaths"
+  }
+
+  path_matcher {
+    name = "allpaths"
+    default_service = module.gce-lb-http.backend_services["default"].self_link
+	
+    path_rule {
+      paths = [
+        "/dev",
+        "/dev/*"
+      ]
+      service = module.gce-lb-http.backend_services["dev"].self_link
+    }
+    
+  }
+}
