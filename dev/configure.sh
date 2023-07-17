@@ -12,12 +12,14 @@ mkdir -p playbooks || true #ignore error (it might already exist, although we do
 # Directory for services secrets (must contain book.pat, jump.pat, project, relay.pat)
 export SECRETS=~/secret/app.practable.io/dev
 
+export PROJECT=app-practable-io-alpha
+
 # SSH access
 export ZONE=europe-west2-c
-export INSTANCE=instance-app-practable-dev
+export INSTANCE=app-practable-io-alpha-dev
 
 # Health check info
-export BACKEND_SERVICE=app-practable-dev-backend-service
+export BACKEND_SERVICE=ci-https-redirect-backend-dev
 
 # Networking info for services & ansible nginx conf
 export INSTANCE_PATH=dev
@@ -49,7 +51,6 @@ export HTTPS_HOST="https://${DOMAIN}/${INSTANCE_PATH}"
 export WSS_HOST="wss://${DOMAIN}/${INSTANCE_PATH}"
 
 # create login.sh
-export PROJECT=$(cat "${SECRETS}/project")
 envsubst '${INSTANCE} ${PROJECT} ${ZONE}' < ./templates/login.sh.template > ./login.sh
 chmod +x ./login.sh
 

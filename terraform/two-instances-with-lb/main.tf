@@ -71,6 +71,11 @@ data "google_compute_image" "ubuntu_image" {
   project = "ubuntu-os-cloud"
 }
 
+resource "google_compute_address" "static-dev" {
+  name = "ipv4-address-dev"
+  region         = "europe-west2"
+}
+
 resource "google_compute_instance" "dev_vm" {
   name         = "app-practable-io-alpha-dev"
   machine_type = "e2-small"
@@ -83,6 +88,9 @@ resource "google_compute_instance" "dev_vm" {
 
   network_interface {
     network = "default"
+    access_config {
+      nat_ip = google_compute_address.static-dev.address
+    }
   }
 }
 
