@@ -18,6 +18,11 @@ variable "region" {
   default = "europe-west2"
 }
 
+## this doesn't seem to do anything!
+variable "zone" {
+  default = "europe-west2-a"
+}
+
 variable "network_name" {
   default = "tf-lb-https-redirect-nat"
 }

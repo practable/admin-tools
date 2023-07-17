@@ -16,10 +16,14 @@
 
 provider "google" {
   project = var.project
+  region = var.region
+  zone = var.zone
 }
 
 provider "google-beta" {
   project = var.project
+  region = var.region
+  zone = var.zone
 }
 
 # comment out to update cert (also modify load balancer to not use ssl, temporarily)
@@ -142,19 +146,19 @@ module "mig" {
 }
 
 
-resource "google_compute_backend_service" "dev" {
-  name          = "backend-service-dev"
-  health_checks = [google_compute_health_check.default.id]
-  load_balancing_scheme = "EXTERNAL_MANAGED"
-}
-
-resource "google_compute_health_check" "default" {
-  name = "health-check"
-  http_health_check {
-    port = 80
-	request_path       = "/dev/"
-  }
-}
+#resource "google_compute_backend_service" "dev" {
+#  name          = "backend-service-dev"
+#  health_checks = [google_compute_health_check.default.id]
+#  load_balancing_scheme = "EXTERNAL_MANAGED"
+#}
+#
+#resource "google_compute_health_check" "default" {
+#  name = "health-check"
+#  http_health_check {
+#    port = 80
+#	request_path       = "/dev/"
+#  }
+#}
 
 
 ## [START cloudloadbalancing_ext_http_gce_http_redirect]
@@ -206,18 +210,22 @@ module "gce-lb-http" {
     }
     dev = {
       protocol    = "HTTP"
+	  load_balancing_scheme = "EXTERNAL"
       port        = 80
       port_name   = "http"
-      timeout_sec = 10
+      timeout_sec = 1
       enable_cdn  = false
 
       health_check = {
+	    check_interval_sec = 2
+		timeout_sec = 1
         request_path = "/dev/"
         port         = 80
+		logging = true
       }
 
       log_config = {
-        enable = false
+        enable = true
       }
 
       groups = [
