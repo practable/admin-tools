@@ -71,6 +71,20 @@ data "template_file" "group-startup-script" {
   }
 }
 
+resource "google_compute_firewall" "default" {
+ name    = "web-firewall"
+ network = "default"
+
+
+ allow {
+   protocol = "tcp"
+   ports    = ["80"]
+ }
+
+ source_ranges = ["0.0.0.0/0"]
+ target_tags = ["http-server"]
+}
+
 data "google_compute_image" "ubuntu_image" {
   family  = "ubuntu-2004-lts"
   project = "ubuntu-os-cloud"
