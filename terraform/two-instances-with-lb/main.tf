@@ -23,7 +23,6 @@ provider "google" {
 provider "google-beta" {
   project = var.project
   region = var.region
-
 }
 
 # comment out to update cert (also modify load balancer to not use ssl, temporarily)
@@ -33,19 +32,6 @@ resource "google_compute_ssl_certificate" "certificate-1" {
   private_key = file("${path.module}/ssl-cert.key")
   certificate = file("${path.module}/ssl-cert.pem")
 }
-
-#resource "google_compute_network" "default" {
-#  name                    = var.network_name
-#  auto_create_subnetworks = false
-#}
-#
-#resource "google_compute_subnetwork" "default" {
-#  name                     = var.network_name
-#  ip_cidr_range            = "10.127.0.0/20"
-#  network                  = google_compute_network.default.self_link
-#  region                   = var.region
-#  private_ip_google_access = true
-#}
 
 resource "google_compute_router" "default" {
   name    = "lb-https-redirect-router"
@@ -92,13 +78,13 @@ data "google_compute_image" "ubuntu_image" {
 
 resource "google_compute_address" "static-dev" {
   name = "ipv4-address-dev"
-  region         = "europe-west2"
+  region = var.region
 }
 
 resource "google_compute_instance" "dev_vm" {
   name         = "app-practable-io-alpha-dev"
   machine_type = "e2-small"
-  zone         = "europe-west2-c"
+  zone         = var.zone
   allow_stopping_for_update = true
   tags = ["http-server"]
   lifecycle {
@@ -113,8 +99,6 @@ resource "google_compute_instance" "dev_vm" {
 
   network_interface {
     network = "default"
-    #network = google_compute_network.default.self_link
-    #subnetwork = google_compute_subnetwork.default.self_link
     access_config {
       nat_ip = google_compute_address.static-dev.address
     }
@@ -135,15 +119,13 @@ resource "google_compute_instance_group" "dev" {
     port = "80"
   }
 
-  zone = "europe-west2-c"
+  zone = var.zone
 }
 
 
 module "mig_template" {
   source     = "terraform-google-modules/vm/google//modules/instance_template"
   version    = "~> 7.9"
-  #network    = google_compute_network.default.self_link
-  #subnetwork = google_compute_subnetwork.default.self_link
   network = "default"
   subnetwork = "default"
   service_account = {
@@ -169,41 +151,25 @@ module "mig" {
     name = "http",
     port = 80
   }]
-  #network    = google_compute_network.default.self_link
-  #subnetwork = google_compute_subnetwork.default.self_link
   network = "default"
   subnetwork = "default"
 }
 
 
-#resource "google_compute_backend_service" "dev" {
-#  name          = "backend-service-dev"
-#  health_checks = [google_compute_health_check.default.id]
-#  load_balancing_scheme = "EXTERNAL_MANAGED"
-#}
-#
-#resource "google_compute_health_check" "default" {
-#  name = "health-check"
-#  http_health_check {
-#    port = 80
-#	request_path       = "/dev/"
-#  }
-#}
 
-
-## [START cloudloadbalancing_ext_http_gce_http_redirect]
 module "gce-lb-http" {
   source               = "GoogleCloudPlatform/lb-http/google"
   version           = "~> 9.0"
   name                 = "ci-https-redirect"
   project              = var.project
   target_tags          = [var.network_name]
-  #firewall_networks    = [google_compute_network.default.name]
   firewall_networks = ["default"]
-  # uncomment below when replacing ssl cert (it can't be in use)
+
+# uncomment below when replacing ssl cert (it can't be in use)
   #ssl                  = false
   #use_ssl_certificates = false
-  # uncomment below for normal operation with cert
+
+# uncomment below for normal operation with cert
   ssl                  = true
   ssl_certificates     = [google_compute_ssl_certificate.certificate-1.self_link]
   use_ssl_certificates = true
@@ -271,16 +237,7 @@ module "gce-lb-http" {
 
   }
 }
-# [END cloudloadbalancing_ext_http_gce_http_redirect]
 
-
-
-## TODO
-## Get backend names for use in the URL map, so specify outside the load balancer?
-## Figure out how to make the URL map from before ...
-
-## investigating the terraform plan outputs shows that
-## backend name(s) are "ci-https-redirect-backend-dev"
 
 resource "google_compute_url_map" "urlmap" {
   name        = "urlmap"
