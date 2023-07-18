@@ -17,13 +17,13 @@
 provider "google" {
   project = var.project
   region = var.region
-  zone = var.zone
+
 }
 
 provider "google-beta" {
   project = var.project
   region = var.region
-  zone = var.zone
+
 }
 
 # comment out to update cert (also modify load balancer to not use ssl, temporarily)
@@ -34,22 +34,23 @@ resource "google_compute_ssl_certificate" "certificate-1" {
   certificate = file("${path.module}/ssl-cert.pem")
 }
 
-resource "google_compute_network" "default" {
-  name                    = var.network_name
-  auto_create_subnetworks = false
-}
-
-resource "google_compute_subnetwork" "default" {
-  name                     = var.network_name
-  ip_cidr_range            = "10.127.0.0/20"
-  network                  = google_compute_network.default.self_link
-  region                   = var.region
-  private_ip_google_access = true
-}
+#resource "google_compute_network" "default" {
+#  name                    = var.network_name
+#  auto_create_subnetworks = false
+#}
+#
+#resource "google_compute_subnetwork" "default" {
+#  name                     = var.network_name
+#  ip_cidr_range            = "10.127.0.0/20"
+#  network                  = google_compute_network.default.self_link
+#  region                   = var.region
+#  private_ip_google_access = true
+#}
 
 resource "google_compute_router" "default" {
   name    = "lb-https-redirect-router"
-  network = google_compute_network.default.self_link
+  #network = google_compute_network.default.self_link
+  network = "default"
   region  = var.region
 }
 
@@ -84,6 +85,12 @@ resource "google_compute_instance" "dev_vm" {
   name         = "app-practable-io-alpha-dev"
   machine_type = "e2-small"
   zone         = "europe-west2-c"
+  allow_stopping_for_update = true
+  tags = ["http-server"]
+  lifecycle {
+    create_before_destroy = true
+  }
+
   boot_disk {
     initialize_params {
       image = data.google_compute_image.ubuntu_image.self_link
@@ -92,6 +99,8 @@ resource "google_compute_instance" "dev_vm" {
 
   network_interface {
     network = "default"
+    #network = google_compute_network.default.self_link
+    #subnetwork = google_compute_subnetwork.default.self_link
     access_config {
       nat_ip = google_compute_address.static-dev.address
     }
@@ -103,7 +112,10 @@ resource "google_compute_instance_group" "dev" {
   description = "instance group for dev path"
 
   instances =  ["${google_compute_instance.dev_vm.self_link}"] #https://stackoverflow.com/questions/65313133/error-invalid-instance-urls-resource-google-compute-instance-group-t-compute
-  
+
+  lifecycle {
+    create_before_destroy = true
+  }
   named_port {
     name = "http"
     port = "80"
@@ -116,8 +128,10 @@ resource "google_compute_instance_group" "dev" {
 module "mig_template" {
   source     = "terraform-google-modules/vm/google//modules/instance_template"
   version    = "~> 7.9"
-  network    = google_compute_network.default.self_link
-  subnetwork = google_compute_subnetwork.default.self_link
+  #network    = google_compute_network.default.self_link
+  #subnetwork = google_compute_subnetwork.default.self_link
+  network = "default"
+  subnetwork = "default"
   service_account = {
     email  = ""
     scopes = ["cloud-platform"]
@@ -141,8 +155,10 @@ module "mig" {
     name = "http",
     port = 80
   }]
-  network    = google_compute_network.default.self_link
-  subnetwork = google_compute_subnetwork.default.self_link
+  #network    = google_compute_network.default.self_link
+  #subnetwork = google_compute_subnetwork.default.self_link
+  network = "default"
+  subnetwork = "default"
 }
 
 
@@ -168,7 +184,8 @@ module "gce-lb-http" {
   name                 = "ci-https-redirect"
   project              = var.project
   target_tags          = [var.network_name]
-  firewall_networks    = [google_compute_network.default.name]
+  #firewall_networks    = [google_compute_network.default.name]
+  firewall_networks = ["default"]
   # uncomment below when replacing ssl cert (it can't be in use)
   #ssl                  = false
   #use_ssl_certificates = false
