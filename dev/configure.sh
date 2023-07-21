@@ -11,6 +11,7 @@ mkdir -p playbooks || true #ignore error (it might already exist, although we do
 
 # Directory for services secrets (must contain book.pat, jump.pat, project, relay.pat)
 export SECRETS=~/secret/app.practable.io/dev
+export EXPT_SECRETS=~/secret
 
 export PROJECT=app-practable-io-alpha
 
@@ -100,6 +101,7 @@ envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-install-relay.yml.template > 
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-revert-relay.yml.template > ./playbooks/revert-relay.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-book.yml.template > ./playbooks/update-book.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-book-service.yml.template > ./playbooks/update-book-service.yml
+envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-jump.yml.template > ./playbooks/update-jump.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-jump-service.yml.template > ./playbooks/update-jump-service.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-nginx-conf.yml.template > ./playbooks/update-nginx-conf.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-relay.yml.template > ./playbooks/update-relay.yml
@@ -107,4 +109,13 @@ envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-relay-service.yml.temp
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-static-contents.yml.template > ./playbooks/update-static-contents.yml
 
 
+# Administration scripts
+envsubst '${HTTPS_HOST}  ${SECRETS}' < ./templates/jump-get-stats.sh.template > ./jump/get-stats.sh
+chmod +x ./jump/get-stats.sh
+
+envsubst '${HTTPS_HOST}  ${SECRETS}' < ./templates/jump-check-access.sh.template > ./jump/check-access.sh
+chmod +x ./jump/check-access.sh
+
+envsubst '${HTTPS_HOST}  ${SECRETS} ${EXPT_SECRETS}' < ./templates/jump-login.sh.template > ./jump/login.sh
+chmod +x ./jump/login.sh
 

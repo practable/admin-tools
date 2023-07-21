@@ -3,3 +3,4 @@ playbooks/
 login.sh
 .source/
 bin/
+ignore/

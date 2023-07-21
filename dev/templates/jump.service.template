@@ -7,7 +7,7 @@ LimitNOFILE=99999
 Environment=JUMP_RELAY_ACCESS_BASE_PATH=/api/v1
 Environment=JUMP_RELAY_AUDIENCE=$JUMP_AUDIENCE
 Environment=JUMP_RELAY_BUFFER_SIZE=128
-Environment=JUMP_RELAY_LOG_LEVEL=info
+Environment=JUMP_RELAY_LOG_LEVEL=trace
 Environment=JUMP_RELAY_LOG_FORMAT=json
 Environment=JUMP_RELAY_LOG_FILE=/var/log/jump/jump.log
 Environment=JUMP_RELAY_PORT_ACCESS=$JUMP_PORT_ACCESS
