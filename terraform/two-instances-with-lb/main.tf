@@ -210,7 +210,9 @@ module "gce-lb-http" {
 	  load_balancing_scheme = "EXTERNAL"
       port        = 80
       port_name   = "http"
-      timeout_sec = 1
+	  # this sets the maximum websocket connection time to 1 year
+	  # keepalives do not extend this (it seems)
+      timeout_sec = 31536000
       enable_cdn  = false
 
       health_check = {
