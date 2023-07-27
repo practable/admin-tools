@@ -123,6 +123,12 @@ chmod +x ./jump/check-access.sh
 envsubst '${HTTPS_HOST}  ${SECRETS} ${EXPT_SECRETS}' < ./templates/jump-login.sh.template > ./jump/login.sh
 chmod +x ./jump/login.sh
 
+mkdir -p ./relay
+envsubst '${HTTPS_HOST}  ${SECRETS}' < ./templates/relay-get-stats.sh.template > ./relay/get-stats.sh
+chmod +x ./relay/get-stats.sh
+
+
+
 # Virtual experiments
 
 # make tokens and access files for jump; relay

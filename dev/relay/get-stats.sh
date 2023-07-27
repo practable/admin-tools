@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Make token
+export RELAY_TOKEN_LIFETIME=30
+export RELAY_TOKEN_SCOPE_READ=true
+export RELAY_TOKEN_SCOPE_WRITE=false
+export RELAY_TOKEN_SECRET=$(</home/tim/secret/app.practable.io/dev/relay.pat)
+export RELAY_TOKEN_TOPIC=stats
+export RELAY_TOKEN_AUDIENCE="https://app.practable.io/dev/access"
+export client_token=$(../bin/relay token)
+echo $client_token | decode-jwt
+# Request Access
+export ACCESS_URL="${RELAY_TOKEN_AUDIENCE}/session/stats"
+
+export RESP=$(curl -s -X POST \
+-H "Authorization: ${client_token}" \
+				   $ACCESS_URL)
+echo $RESP
+export STATS_URL=$(echo $RESP	| jq -r '.uri')
+echo '{"cmd":"update"}' | websocat -B 1048576 -n1 "$STATS_URL" | jq .

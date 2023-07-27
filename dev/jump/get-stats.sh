@@ -14,6 +14,5 @@ export ACCESS_URL="${JUMP_TOKEN_AUDIENCE}${JUMP_BASE_PATH}/${JUMP_TOKEN_CONNECTI
 export RESP=$(curl -s -X POST  \
 -H "Authorization: ${TOKEN}" \
 				   $ACCESS_URL)
-echo $RESP
 export STATS_URL=$(echo $RESP	| jq -r '.uri')
 echo '{"cmd":"update"}' | websocat -B 1048576 -n1 "$STATS_URL" | jq 
