@@ -45,7 +45,7 @@ export DEV_STATIC_SUB_DIRS="['config', 'images', 'info', 'ui']"
 
 # Virtual experiments
 export VE_NUM=3
-export VE_LIFETIME=3600
+export VE_LIFETIME=604800
 export JUMP_BASE_PATH=/api/v1
 	
 ###########################################################################
