@@ -13,7 +13,7 @@ done
 
 /session host &
 sleep 1
-/etc/practable/session-rules
+/etc/practable/session-rules.sh
 
 
 
