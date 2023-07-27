@@ -1,0 +1,6 @@
+#!/bin/bash
+for (( ; ; ))
+do
+   echo '{"these":"are","not":"the","droids":"you","are":looking","for":"honest, guv","date":"'"$(date)"'"}' 
+   sleep 1
+done
