@@ -1,0 +1,27 @@
+#!/bin/sh
+# VE_NUM is template variable
+id=0
+for i in $(seq 0 ${VE_NUM})
+do
+	num=$(printf "%02d" $i)
+    expt="test${num}"
+	data="${expt}-st-data"
+	video="${expt}-st-video"
+	dataToken=$(< "/etc/practable/relay-${data}.token")
+	dataAccess=$(< "/etc/practable/relay-${data}.access")
+
+	videoToken=$(< "/etc/practable/relay-${video}.token")
+	videoAccess=$(< "/etc/practable/relay-${video}.access")
+	
+	curl -X POST -H "Content-Type: application/json" -d '{"stream":"video","destination":"'"${videoAccess}"'","id":"'"${id}"'","token":"'"${videoToken}"'"}' http://localhost:8888/api/destinations
+
+	((id++))
+	
+	curl -X POST -H "Content-Type: application/json" -d '{"stream":"pendulum","destination":"'"${dataAccess}"'","id":"'"${id}"'","token":"'"${dataToken}"'"}' http://localhost:8888/api/destinations 
+
+	((id++))
+	
+
+done
+
+
