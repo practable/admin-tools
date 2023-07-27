@@ -156,8 +156,9 @@ do
 	# Relay Token (data)
 	
 	export RELAY_TOKEN_LIFETIME=$VE_LIFETIME
-	export RELAY_TOKEN_READ=true
-	export RELAY_TOKEN_WRITE=true
+	export RELAY_TOKEN_SCOPE_OTHER=expt
+	export RELAY_TOKEN_SCOPE_READ=true
+	export RELAY_TOKEN_SCOPE_WRITE=true
 	export RELAY_TOKEN_SECRET=$RELAY_SECRET
 	export RELAY_TOKEN_TOPIC="${expt}-st-data"
 	export RELAY_TOKEN_AUDIENCE=$RELAY_AUDIENCE
@@ -170,8 +171,9 @@ do
 	
 	# Relay token (video)
 	export RELAY_TOKEN_LIFETIME=$VE_LIFETIME
-	export RELAY_TOKEN_READ=true
-	export RELAY_TOKEN_WRITE=true
+	export RELAY_TOKEN_SCOPE_OTHER=expt
+	export RELAY_TOKEN_SCOPE_READ=true
+	export RELAY_TOKEN_SCOPE_WRITE=true
 	export RELAY_TOKEN_SECRET=$RELAY_SECRET
 	export RELAY_TOKEN_TOPIC="${expt}-st-video"
 	export RELAY_TOKEN_AUDIENCE=$RELAY_AUDIENCE
