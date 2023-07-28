@@ -1,0 +1,172 @@
+---
+descriptions:
+  d-g-a:
+    name: group-a
+    type: group
+    short: a
+  d-p-a:
+    name: policy-a
+    type: policy
+    short: a
+  d-r-test00:
+    name: resource-test00
+    type: resource
+    short: test00
+  d-r-test01:
+    name: resource-test01
+    type: resource
+    short: test01
+  d-r-test02:
+    name: resource-test00
+    type: resource
+    short: test00
+  d-r-test03:
+    name: resource-test01
+    type: resource
+    short: test01
+  d-sl-test00:
+    name: slot-test00
+    type: slot
+    short: test00
+  d-sl-test01:
+    name: slot-test01
+    type: slot
+    short: test01
+  d-sl-test02:
+    name: slot-test02
+    type: slot
+    short: test02
+  d-sl-test03:
+    name: slot-test03
+    type: slot
+    short: test03
+  d-ui-a:
+    name: ui-a
+    type: ui
+    short: a
+display_guides:
+  1mFor20m:
+    book_ahead: 20m
+    duration: 1m
+    max_slots: 15
+    label: 1m
+groups:
+  g-a:
+    description: d-g-a
+    policies:
+      - p-a
+policies:
+  p-a:
+    book_ahead: 1h
+    description: d-p-a
+    display_guides:
+      - 1mFor20m
+    enforce_book_ahead: true
+    enforce_max_bookings: false
+    enforce_max_duration: false
+    enforce_min_duration: false
+    enforce_max_usage: false
+    max_bookings: 0
+    max_duration: 0s
+    min_duration: 0s
+    max_usage: 0s
+    slots:
+      - sl-test00
+      - sl-test01
+      - sl-test02
+      - sl-test03
+resources:
+  r-test00:
+    description: d-r-test00
+    streams:
+      - st-video
+      - st-data
+    topic_stub: test00
+  r-test01:
+    description: d-r-test01
+    streams:
+      - st-video
+      - st-data
+    topic_stub: test01
+  r-test02:
+    description: d-r-test02
+    streams:
+      - st-video
+      - st-data
+      - st-video2
+    topic_stub: test02
+  r-test03:
+    description: d-r-test03
+    streams:
+      - st-data
+    topic_stub: test03
+slots:
+  sl-test00:
+    description: d-sl-test00
+    policy: p-a
+    resource: r-test00
+    ui_set: us-a
+    window: w-a
+  sl-test01:
+    description: d-sl-test01
+    policy: p-a
+    resource: r-test01
+    ui_set: us-a
+    window: w-a
+  sl-test02:
+    description: d-sl-test02
+    policy: p-a
+    resource: r-test02
+    ui_set: us-a
+    window: w-a
+  sl-test03:
+    description: d-sl-test03
+    policy: p-a
+    resource: r-test03
+    ui_set: us-a
+    window: w-a
+streams:
+  st-video:
+    url: https://app.practable.io/dev/access
+    connection_type: session
+    for: video
+    scopes:
+      - read
+      - write
+      - user
+    topic: tbc
+  st-video2:
+    url: https://app.practable.io/dev/access
+    connection_type: session
+    for: video
+    scopes:
+      - read
+      - write
+      - user
+    topic: tbc
+  st-data:
+    url: https://app.practable.io/dev/access
+    connection_type: session
+    for: data
+    scopes:
+      - read
+      - write
+      - user
+    topic: tbc
+uis:
+  ui-a:
+    description: d-ui-a
+    url: a
+    streams_required:
+      - st-video
+      - st-data
+ui_sets:
+  us-a:
+    uis:
+      - ui-a
+windows:
+  w-a:
+    allowed:
+      - start: 2022-11-04T00:00:00Z
+        end: 2099-11-06T00:00:00Z
+    denied: []
