@@ -21,7 +21,7 @@
        repo: https://github.com/practable/book.git
        dest: /var/lib/practable/sources/book
        update: yes
-       version: main
+       version: develop
 
    - name: book build
      command: ./build.sh
