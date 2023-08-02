@@ -134,3 +134,135 @@ Before making this repo public it was scanned for secrets using [git secrets](ht
 ```
 git secrets --scan-history
 ```
+
+
+## Trouble shooting
+
+If an experiment does not appear to be connecting to `session relay`, or `shell relay` then the likely causes are
+
+0. power or network wiring issue (unlikely)
+1. SD card issue (unlikely)
+2. tokens expired (also unlikely, but some earlier experiments only had 1yr tokens)
+
+## How to diagnose a token issue
+
+0. Book out the other experiments in the container
+1. Turn container off
+2. Connect your linux laptop to the network port on the container and enable wifi sharing to wired connections
+3. Turn container power on
+4. Identify the sub net used for sharing, by listing the IP addresses of all your laptop network interfaces, and looking at the address associated with your physical network interface, usually `eth0` or similar (can be more exotic name on laptops though)
+```
+ip addr
+```
+It's usually going to be something in the `10.42.0.0/24` subnet, so we'll proceed on that basis (modify the below accordingingly if needed)
+
+5. Map the experiments you can see on your local network
+```
+sudo nmap -sP 10.42.0.0/24
+```
+6. Identify which one you want, by looking at the mac addresses. If you are not sure which `mac` you want, either check in the secrets repo with e.g. for pen00
+```
+export EXPT=pend00
+~/secret/mac $EXPT
+```
+Not all experiments have a `mac` in `~/secret/experiments.yaml` so you may get a null response (e.g. there is no entry for `pvna00` at this time)
+
+```
+# change xx to suit the IP you found above
+export IP=10.42.0.xx 
+```
+
+8. Check the user name and password of the experiment
+```
+export USER=$(~/secret/eu $EXPT) && echo user=$USER
+~secret/ep $EXPT
+```
+
+7. If you do not know which one is which, then simply try logging in and checking
+```
+# enter password when prompted
+ssh $USER@$IP 
+```
+
+8. check what machine you are on
+Now you are logged in to the rpi, following commands are run on the experiment unless mentioned otherwise
+```
+export name={$(< /etc/practable/data.access) && export name=${name##*/} && echo $name
+```
+
+9. now check the token(s)
+
+```
+cat /etc/practable/data.token
+```
+
+copy the token and then run on your laptop the following command, then paste in the token
+```
+decode-jwt
+```
+
+The output will look like this:
+```
+{
+  "alg": "HS256",
+  "typ": "JWT"
+}
+{
+  "topic": "pvna01-data",
+  "prefix": "session",
+  "scopes": [
+    "write",
+    "read"
+  ],
+  "aud": "https://relay-access.practable.io",
+  "exp": 1835171888,
+  "iat": 1677491888,
+  "nbf": 1677491888
+}
+exp: Sat 26 Feb 09:58:08 GMT 2028
+iat: Mon 27 Feb 09:58:08 GMT 2023
+nbf: Mon 27 Feb 09:58:08 GMT 2023
+```
+
+Check that the `exp` date is not in the past - if it is, replace the token by editing
+`/etc/practable/data.token`
+
+10. Do the same for `/etc/practable/video.token` if there is a video feed.
+
+11. Once the tokens are updated, force experiment to use them
+```
+sudo systemctl restart session-rules
+```
+
+12. Confirm that the streams are now showing on `session-relay`
+on laptop
+
+```
+cd ~/sources/admin-tools/aws/sessionrelay
+./getSessionStats.sh | grep $EXPT -B 1 -A 18
+```
+
+13. Now check the token for shell relay 
+
+on the experiment
+```
+cd /etc/systemd/system
+#may be called shellhost2.service
+cat shellhost.service | grep TOKEN
+```
+
+The output will look like
+```
+Environment=SHELLHOST_TOKEN=eyJhbGc...<snip>...
+```
+copy the token string (everything after the equals sign) and run `decode-jwt` on your laptop as before.
+
+If the token has expired, then edit the service file to have the new token contents.
+
+Then restart the service
+
+```
+sudo systemctl daemon-reload
+sudo systemctl restart shellhost.service
+```
+
