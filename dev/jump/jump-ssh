@@ -1,0 +1,101 @@
+#!/bin/bash
+
+#TODO test command line ./jump-ssh --audience https://app.practable.io/dev/jump --expt pend18 --identity ~/secret/practable-experiments --user practable --secret /home/tim/secret/app.practable.io/dev/jump.pat
+# defaults
+LIFETIME=86400
+
+while [ $# -gt 0 ]; do
+	case "$1" in
+	--audience|-a*)
+      if [[ "$1" != *=* ]]; then shift; fi # Value is next arg if no `=`
+      AUDIENCE="${1#*=}"
+      ;;
+    --expt|-e*)
+      if [[ "$1" != *=* ]]; then shift; fi # Value is next arg if no `=`
+      EXPT="${1#*=}"
+      ;;
+	--identity*|-i*)
+      if [[ "$1" != *=* ]]; then shift; fi # Value is next arg if no `=`
+      IDENTITY="${1#*=}"
+      ;;
+	--lifetime*|-l*)
+      if [[ "$1" != *=* ]]; then shift; fi # Value is next arg if no `=`
+      LIFETIME="${1#*=}"
+      ;;	
+    --secret*|-s*)
+      if [[ "$1" != *=* ]]; then shift; fi
+      SECRET="${1#*=}"
+      ;;
+    --token*|-t*)
+      if [[ "$1" != *=* ]]; then shift; fi
+      TOKEN="${1#*=}"
+      ;;
+	--user*|-u*)
+      if [[ "$1" != *=* ]]; then shift; fi
+      USER="${1#*=}"
+      ;;
+    --help|-h)
+		printf "Example usage (secret): jump-ssh --audience https://app.example.org/tenant/jump --expt some_expt --identity /path/to/ssh_key  --user ssh_user --secret /path/to/jump_secret"
+		printf "Example usage (token): jump-ssh --audience https://app.example.org/tenant/jump --expt pend18 --identity /path/to/ssh_key  --user ssh_user --token /path/to/jump_some_client.token"
+        printf ""
+		printf "Required parameters:"
+		printf "--audience/-a instance path"
+  	    printf "--expt/-e experiment name"
+		printf "--identity/-i ssh identity"
+		printf "--user/-u ssh user name"
+		printf "You must also supply ONE of these parameters:"
+		printf "--secret/-s jump secret"
+		printf "--token/-t jump token"
+      exit 0
+      ;;
+    *)
+      >&2 printf "Error: Invalid argument\n"
+      exit 1
+      ;;
+  esac
+  shift
+done
+
+
+# generate token if not supplied
+if [ -z "$TOKEN" ]
+then
+
+	if [ -z "$SECRET" ]
+	then
+		"You supplied neither a --token nor a --secret"
+		exit
+	fi
+
+	export JUMP_TOKEN_AUDIENCE=$AUDIENCE
+	export JUMP_TOKEN_CONNECTION_TYPE=connect
+	export JUMP_TOKEN_LIFETIME=${LIFETIME}
+	export JUMP_TOKEN_ROLE=client
+	export JUMP_TOKEN_SECRET=$(<${SECRET})
+	export JUMP_TOKEN_TOPIC=$EXPT
+	export JUMP_CLIENT_TOKEN=$(../bin/jump token) 
+	
+else
+    export JUMP_CLIENT_TOKEN=${TOKEN}
+fi
+
+
+# identify a free port
+#https://unix.stackexchange.com/questions/55913/whats-the-easiest-way-to-find-an-unused-local-port
+port=$(comm -23 <(seq 49152 65535 | sort) <(ss -Htan | awk '{print $4}' | cut -d':' -f2 | sort -u) | sort -n | head -n 1)
+
+
+export JUMP_BASE_PATH=/api/v1 
+export JUMP_CLIENT_LOCAL_PORT="${port}"
+export JUMP_CLIENT_RELAY_SESSION="${JUMP_TOKEN_AUDIENCE}${JUMP_BASE_PATH}/${JUMP_TOKEN_CONNECTION_TYPE}/${JUMP_TOKEN_TOPIC}"
+export JUMP_CLIENT_LOG_LEVEL=trace
+export JUMP_CLIENT_LOG_FILE=stdout
+export JUMP_CLIENT_LOG_FORMAT=text
+../bin/jump client >/dev/null 2>&1 &
+pid=$!
+sleep 0.2s #delay for port to be open (increase this to say 1s if you get connection errors)
+ssh -o "StrictHostKeyChecking no" -i ${IDENTITY}  ${USER}@localhost -p "$port"
+kill $!
+
+
+
