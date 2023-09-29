@@ -72,7 +72,8 @@ resource "google_compute_firewall" "default" {
 }
 
 data "google_compute_image" "ubuntu_image" {
-  family  = "ubuntu-2004-lts"
+  name = "ubuntu-2004-focal-v20230715"
+  #family  = "ubuntu-2004-focal-lts" 
   project = "ubuntu-os-cloud"
 }
 
@@ -265,4 +266,25 @@ resource "google_compute_url_map" "urlmap" {
     }
     
   }
+}
+
+#https://cloud.google.com/docs/terraform/resource-management/store-state
+resource "random_id" "bucket_prefix" {
+  byte_length = 8
+}
+
+resource "google_storage_bucket" "default" {
+  name          = "${random_id.bucket_prefix.hex}-bucket-tfstate"
+  force_destroy = false
+  location      = "EUROPE-WEST2"
+  storage_class = "STANDARD"
+  versioning {
+    enabled = true
+  }
+  #encryption {
+  #  default_kms_key_name = google_kms_crypto_key.terraform_state_bucket.id
+  #}
+  #depends_on = [
+  #  google_project_iam_member.default
+  #]
 }
