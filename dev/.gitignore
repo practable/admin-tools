@@ -4,3 +4,4 @@ login.sh
 .source/
 bin/
 ignore/
+logs/
