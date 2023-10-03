@@ -77,10 +77,21 @@ data "google_compute_image" "ubuntu_image" {
   project = "ubuntu-os-cloud"
 }
 
+data "google_compute_image" "ubuntu_image_ed0" {
+  name = "ubuntu-2004-focal-v20230918"
+  project = "ubuntu-os-cloud"
+}
+
 resource "google_compute_address" "static-dev" {
   name = "ipv4-address-dev"
   region = var.region
 }
+resource "google_compute_address" "static-ed0" {
+  name = "ipv4-address-ed0"
+  region = var.region
+}
+
+
 
 resource "google_compute_instance" "dev_vm" {
   name         = "app-practable-io-alpha-dev"
@@ -106,11 +117,38 @@ resource "google_compute_instance" "dev_vm" {
   }
 }
 
+resource "google_compute_instance" "ed0_vm" {
+  name         = "app-practable-io-alpha-ed0"
+  machine_type = "e2-medium"
+  zone         = var.zone
+  allow_stopping_for_update = true
+  tags = ["http-server"]
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  boot_disk {
+    initialize_params {
+      image = data.google_compute_image.ubuntu_image_ed0.self_link
+    }
+  }
+
+  network_interface {
+    network = "default"
+    access_config {
+      nat_ip = google_compute_address.static-ed0.address
+    }
+  }
+}
+
+
+
+#https://stackoverflow.com/questions/65313133/error-invalid-instance-urls-resource-google-compute-instance-group-t-compute
 resource "google_compute_instance_group" "dev" {
   name        = "instance-group-dev"
   description = "instance group for dev path"
 
-  instances =  ["${google_compute_instance.dev_vm.self_link}"] #https://stackoverflow.com/questions/65313133/error-invalid-instance-urls-resource-google-compute-instance-group-t-compute
+  instances =  ["${google_compute_instance.dev_vm.self_link}"] 
 
   lifecycle {
     create_before_destroy = true
@@ -123,6 +161,22 @@ resource "google_compute_instance_group" "dev" {
   zone = var.zone
 }
 
+resource "google_compute_instance_group" "ed0" {
+  name        = "instance-group-ed0"
+  description = "instance group for ed0 path"
+
+  instances =  ["${google_compute_instance.ed0_vm.self_link}"] 
+
+  lifecycle {
+    create_before_destroy = true
+  }
+  named_port {
+    name = "http"
+    port = "80"
+  }
+
+  zone = var.zone
+}
 
 module "mig_template" {
   source     = "terraform-google-modules/vm/google//modules/instance_template"
@@ -237,7 +291,38 @@ module "gce-lb-http" {
         enable = false
       }
     }
+	
+    ed0 = {
+      protocol    = "HTTP"
+	  load_balancing_scheme = "EXTERNAL"
+      port        = 80
+      port_name   = "http"
+	  # this sets the maximum websocket connection time to 1 year
+	  # keepalives do not extend this (it seems)
+      timeout_sec = 31536000
+      enable_cdn  = false
 
+      health_check = {
+	    check_interval_sec = 2
+		timeout_sec = 1
+        request_path = "/ed0/"
+        port         = 80
+		logging = true
+      }
+
+      log_config = {
+        enable = true
+      }
+
+      groups = [
+        {
+          group = google_compute_instance_group.ed0.id
+        }
+      ]
+      iap_config = {
+        enable = false
+      }
+    }
   }
 }
 
@@ -264,6 +349,15 @@ resource "google_compute_url_map" "urlmap" {
       ]
       service = module.gce-lb-http.backend_services["dev"].self_link
     }
+	
+    path_rule {
+      paths = [
+        "/ed0",
+        "/ed0/*"
+      ]
+      service = module.gce-lb-http.backend_services["ed0"].self_link
+    }
+
     
   }
 }
