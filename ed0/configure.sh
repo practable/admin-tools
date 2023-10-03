@@ -15,36 +15,36 @@ mkdir -p playbooks || true
 # Edit to suit your instance
 
 # Directory for services secrets (must contain book.pat, jump.pat, project, relay.pat)
-export SECRETS=~/secret/app.practable.io/dev
+export SECRETS=~/secret/app.practable.io/ed0
 export EXPT_SECRETS=~/secret
 
 export PROJECT=app-practable-io-alpha
 
 # SSH access
 export ZONE=europe-west2-c
-export INSTANCE=app-practable-io-alpha-dev
+export INSTANCE=app-practable-io-alpha-ed0
 
 # Health check info
-export BACKEND_SERVICE=ci-https-redirect-backend-dev
+export BACKEND_SERVICE=ci-https-redirect-backend-ed0
 
 # Networking info for services & ansible nginx conf
-export INSTANCE_PATH=dev
+export INSTANCE_PATH=ed0
 # used in nginx configuration & ansible playbook for lets encrypt
 export DOMAIN=app.practable.io
 # Used in ansible nginx playbook for setting up certbot
 export EMAIL=rl.eng@ed.ac.uk
 # used in all ansible playbook templates (note usually underscore, not hyphen)
-export ANSIBLE_GROUP=app_practable_dev
+export ANSIBLE_GROUP=app_practable_ed0
 
 # Static content: main/default content for the instance ("production" equivalent)
-export STATIC_REPO_NAME=static-app-practable-io-dev-default
-export STATIC_REPO_URL=https://github.com/practable/static-app-practable-io-dev-default.git
+export STATIC_REPO_NAME=static-app-practable-io-ed0-default
+export STATIC_REPO_URL=https://github.com/practable/static-app-practable-io-ed0-default.git
 # Note that book is deliberately not included in this list of sub-dirs
 export STATIC_SUB_DIRS="['config', 'images', 'info', 'ui']"
 
 # Static content: development versions on same server (TODO improve to let devs be self sufficient)
-export DEV_STATIC_REPO_NAME=static-app-practable-io-dev-dev
-export DEV_STATIC_REPO_URL=https://github.com/practable/static-app-practable-io-dev-dev.git
+export DEV_STATIC_REPO_NAME=static-app-practable-io-ed0-dev
+export DEV_STATIC_REPO_URL=https://github.com/practable/static-app-practable-io-ed0-dev.git
 # Note that book is deliberately not included in this list of sub-dirs
 export DEV_STATIC_SUB_DIRS="['config', 'images', 'info', 'ui']"
 

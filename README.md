@@ -176,8 +176,47 @@ TODO - update this document with a link to a repo that represents a good example
 
 Our system does not rely on any particular cloud provider features, so theoretically it can run on any provider that will give you VMs with a few CPU and few GB of RAM, a public IPv4 address, firewall with open ports for incoming 443/tcp and 22/tcp, and root access, as well as some form of load balancer if you need one. Issues we have encountered with some suppliers of cloud compute services include lack of (a) root access, (b) public IPv4, (c) convenient tooling for provisioning. 
 
+
+### terraform
+
+the instances and supporting infrastructure, such as load balancers, are defined using terraform.
+
+To create a new instance
+- add instance, disk, static IP, and URL map entry in terraform (check plan carefully before applying, in case it tries to upgrade the disk on an existing instance where you did not version-pin the image)
+- edit the dynamic inventory file for ansible to have an entry for your new instance (see ansible section below for hints)
+- create new credentials in your secrets directory (see `configure.sh` for an existing instance for hints)
+- create new directory in this repo and copy in 
+    - `configure.sh`
+	- `install.sh`
+	- `./templates`
+	- `.gitignore`
+- run `install.sh` 	
+- edit `configure.sh` then run it
+
+The health check will initially be unhealthy (if it appears empty, check the instance is running)
+
+Try logging in. Should be available right away.
+
+run playbooks
+
+- `install-nginx`
+- `update-static-contents`
+
+Health check should now be healthy
+
+Continue play book installation
+
+- `install-book`
+- `install-jump`
+- `install-relay`
+
+After that's done, try accessing booking page, to check it is running (likely get an "oops" page as need to rebuild with correct base path). Then configure booking manifests etc
+
 ### instances
 
+NOTE: `Machine type with name ' e2-custom-3328' does not exist in zone 'europe-west2-c'., invalid` error occurred when attempting to define this custom machine in terraform.
+ 
+#### console setup - don't do it this way....
 Create these before the unmanaged instance groups
 
 for dev: 
@@ -536,20 +575,22 @@ We want to define groups that we can run playbooks against. We can do that by cr
 
 
 
+
 ```
 plugin: gcp_compute
 projects:
-  - healthy-reason-375613
+  - app-practable-io-alpha
 auth_kind: serviceaccount
-service_account_file: /home/tim/healthy-reason-375613-970326130116.json
+service_account_file: /home/tim/secret/app.practable.io/app-practable-io-alpha-84a62509ce73.json
 keyed_groups:
   - key: labels
   - prefix: label
 groups:
-  app_practable_dev: "'instance-app-practable-dev' in name"
-  app_practable_ed0: "'instance-app-practable-ed0' in name"
-  
+  development: "'environment' in (labels|list)"
+  app_practable_dev: "'app-practable-io-alpha-dev' in name"
+  app_practable_ed0: "'app-practable-io-alpha-ed0' in name"
 ```
+
 
 ```
 $ ansible-inventory --list 
