@@ -135,6 +135,64 @@ g/ populate services with data (such as experiment manifest)
 h/ (re)configure your experiments to connect to the instance
 
 
+### Ansible scripts for experiments
+
+We are relaying the `ssh` connections via `jump` so `jump client` needs to be started for each experiment want to administer.
+
+Ideally, we would like to be able to list the experiments that are associated with an instance, and have ansible start any `jump client` instances we need, so that there is no manual overhead.
+
+There could be a couple of modes to consider here .... just supplying a secret so we don't need to refresh 
+
+```
+jump-ssh practable@app.practable.io/dev/connect/pend00 --ssh-token  --token-file /etc/practable/jump-pend00.token
+jump-ssh practable@app.practable.io/dev/connect/pend00 --ssh-token  --secret-file ~/secret/app.practable.io/dev/jump.pat
+```
+
+This could be a simple bash script that wraps a jump client.
+
+
+
+
+
+
+- be able to setup an inventory and run ansible commands on a new machine at short notice, without worring about a brittle configuration setup
+- avoid lots of long running `jump client` instances on thge admin machine (as these are typically multipurpose)
+- avoid the frustration of having ansible playbooks fail because the connections are not present 
+- automate the startingf avoid the mental overhead of having to manually select whucorrelate ansible playbook groups with what 
+
+
+If we had an alternative ssh command, that understood our `jump` protocol, then we could dynamically create these connections, and simply have an inventory that looked like this:
+
+app.practable.io/ed0/connect/
+
+
+While it might be most efficient to do this in dynamic way, 
+
+Each instance will expect jump connections, so it can monitor status. There is no problem having admin and relay connections on the same instance. If the instance fails, we can spin up another at the same address and carry on. If we have issues with the isntance, then that will be a higher priority to fix, than any admin on experiments, so no problem there either. It is also possible that experiments will have more than one jump connection.
+
+```yaml
+---
+groups:
+  pend-pilot:
+    - pend00
+  pend-rest:
+    - pend01
+	- pend02
+  pend-all:
+    - pend00
+	- pend01
+	- pend02
+  spin-amax-pilot:
+    - spin40
+  spin-amax-rest:
+    - spin41
+	- spin42
+  spin-amax-all:
+    - spin40
+	- spin41
+	- spin42
+```
+
 
 ### Adding a new user interface based on vue.js
 
