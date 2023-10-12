@@ -49,7 +49,7 @@ ExecStart=/usr/local/bin/status serve
 
 PermissionsStartOnly=true
 ExecStartPre=/bin/mkdir -p /var/log/status
-ExecStartPre=/bin/chown syslog:adm /var/status/book
+ExecStartPre=/bin/chown syslog:adm /var/log/status
 ExecStartPre=/bin/chmod 755 /var/log/status
 StandardOutput=syslog
 StandardError=syslog

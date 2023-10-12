@@ -133,6 +133,7 @@ envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-jump.yml.template > ./
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-jump-service.yml.template > ./playbooks/update-jump-service.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-nginx-conf.yml.template > ./playbooks/update-nginx-conf.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-relay.yml.template > ./playbooks/update-relay.yml
+envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-status.yml.template > ./playbooks/update-status.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-relay-service.yml.template > ./playbooks/update-relay-service.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-static-contents.yml.template > ./playbooks/update-static-contents.yml
 
