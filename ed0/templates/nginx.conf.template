@@ -141,7 +141,12 @@ http {
             try_files $uri $uri/ $uri.html /static/ui/truss-noforce-1.0/;
             index index.html;
         }
-
+		
+        location /$INSTANCE_PATH/static/ui/truss-openday-1.0/ {
+            try_files $uri $uri/ $uri.html /static/ui/truss-openday-1.0/;
+            index index.html;
+        }
+		
         location /$INSTANCE_PATH/static/info/truss-1.0/ {
             try_files $uri $uri/ $uri.html /info/truss-1.0/;
             index index.html;
@@ -151,7 +156,12 @@ http {
             try_files $uri $uri/ $uri.html /info/truss-noforce-1.0/;
             index index.html;
         }
-
+		
+        location /$INSTANCE_PATH/static/info/openday-1.0/ {
+            try_files $uri $uri/ $uri.html /info/truss-openday-1.0/;
+            index index.html;
+        }
+		
         location /$INSTANCE_PATH/static/ui/turner-1.0/ {
             try_files $uri $uri/ $uri.html /static/ui/turner-1.0/;
             index index.html;
@@ -217,7 +227,12 @@ http {
             try_files $uri $uri/ $uri.html /dev-static/ui/truss-noforce-1.0/;
             index index.html;
         }
-
+		
+	    location /$INSTANCE_PATH/dev-static/ui/truss-openday-1.0/ {
+            try_files $uri $uri/ $uri.html /dev-static/ui/truss-openday-1.0/;
+            index index.html;
+        }
+		
      	location /$INSTANCE_PATH/book/ {
 	       add_header Access-Control-Allow-Origin *;
     	   try_files $uri $uri/ /$INSTANCE_PATH/book/index.html;
