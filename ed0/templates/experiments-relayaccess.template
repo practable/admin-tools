@@ -8,8 +8,8 @@ for i in $(seq $3 $4)
 do
     num=$(printf "%02d" $i)
 	name="${2}${num}"
-	echo "${1}/session/${name}-data" > "data.access.${name}"  
-	echo "${1}/session/${name}-video" > "video.access.${name}"
+	echo "${1}/session/${name}-st-data" > "st-data.access.${name}"  
+	echo "${1}/session/${name}-st-video" > "st-video.access.${name}"
 done
 
 
