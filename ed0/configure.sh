@@ -164,12 +164,15 @@ chmod +x ./experiments/relayaccess
 envsubst '' < ./templates/experiments-relaytoken.template > ./experiments/relaytoken
 chmod +x ./experiments/relaytoken
 
-envsubst '' < ./templates/experiments-jumpaccess.template > ./experiments/jumpaccess
-chmod +x ./experiments/jumpaccess
+# jump
 
-envsubst '' < ./templates/experiments-jumptoken.template > ./experiments/jumptoken
-chmod +x ./experiments/jumptoken
+envsubst '' < ./templates/experiments-jumphost.template > ./experiments/jumphost
+chmod +x ./experiments/jumphost
 
+envsubst '' < ./templates/experiments-jumpclient.template > ./experiments/jumpclient
+chmod +x ./experiments/jumpclient
+
+envsubst '' < ./templates/experiments-jump.service.template > ./experiments/jump.service
 
 
 # Virtual experiments
