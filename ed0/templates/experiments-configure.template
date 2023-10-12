@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# example: ./configure pvna 05 06
+
+#envsubst should replace the following with something like:
+# RELAY_AUDIENCE=https://relay-access.practable.io
+# RELAY_SECRET=some_secret
+# JUMP_AUDIENCE=https://shell-access2.practable.io
+# JUMP_SECRET=some_secret
+
+export NAME=$1
+export START=$2
+export STOP=$3
+
+./relayaccess $RELAY_AUDIENCE $NAME $START $STOP
+./relaytoken $RELAY_AUDIENCE $RELAY_SECRET
+./jumpaccess $JUMP_AUDIENCE $NAME $START $STOP
+./jumptoken $JUMP_AUDIENCE $JUMP_SECRET 
+

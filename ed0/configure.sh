@@ -151,6 +151,25 @@ mkdir -p ./relay
 envsubst '${HTTPS_HOST}  ${SECRETS}' < ./templates/relay-get-stats.sh.template > ./relay/get-stats.sh
 chmod +x ./relay/get-stats.sh
 
+# Experiments
+
+mkdir -p ./experiments
+envsubst '${RELAY_AUDIENCE} ${RELAY_SECRET} ${JUMP_AUDIENCE} ${JUMP_SECRET}' < ./templates/experiments-configure.template > ./experiments/configure
+chmod +x ./experiments/configure
+
+# no substitutions in these four, at this time
+envsubst '' < ./templates/experiments-relayaccess.template > ./experiments/relayaccess
+chmod +x ./experiments/relayaccess
+
+envsubst '' < ./templates/experiments-relaytoken.template > ./experiments/relaytoken
+chmod +x ./experiments/relaytoken
+
+envsubst '' < ./templates/experiments-jumpaccess.template > ./experiments/jumpaccess
+chmod +x ./experiments/jumpaccess
+
+envsubst '' < ./templates/experiments-jumptoken.template > ./experiments/jumptoken
+chmod +x ./experiments/jumptoken
+
 
 
 # Virtual experiments
