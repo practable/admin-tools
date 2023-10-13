@@ -8,8 +8,8 @@ Environment=BOOK_ACCESS_TOKEN_TTL=1h
 Environment=BOOK_ADMIN_SECRET=$BOOK_SECRET
 Environment=BOOK_AUDIENCE=$BOOK_AUDIENCE
 Environment=BOOK_RELAY_SECRET=$RELAY_SECRET
-Environment=BOOK_LOG_LEVEL=trace
-Environment=BOOK_LOG_FORMAT=text
+Environment=BOOK_LOG_LEVEL=info
+Environment=BOOK_LOG_FORMAT=json
 Environment=BOOK_LOG_FILE=/var/log/book/book.log
 Environment=BOOK_MIN_USERNAME_LENGTH=6
 Environment=BOOK_PORT=$BOOK_PORT

@@ -134,10 +134,15 @@ envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-nginx-conf.yml.templat
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-relay.yml.template > ./playbooks/update-relay.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-relay-service.yml.template > ./playbooks/update-relay-service.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-status.yml.template > ./playbooks/update-status.yml
+envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-status-service.yml.template > ./playbooks/update-status-service.yml
+
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-static-contents.yml.template > ./playbooks/update-static-contents.yml
 
 
 # Administration scripts
+envsubst '${BOOK_AUDIENCE} ${BOOK_SECRET} ${DOMAIN}  ${INSTANCE_PATH}' < ./templates/book-admin.template > ./book/admin.sh
+chmod +x ./book/admin.sh
+
 envsubst '${HTTPS_HOST}  ${SECRETS}' < ./templates/jump-get-stats.sh.template > ./jump/get-stats.sh
 chmod +x ./jump/get-stats.sh
 
