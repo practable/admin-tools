@@ -1,0 +1,18 @@
+#!/bin/sh
+# Original streams (retained)
+dataAccess=$(cat /etc/practable/st-data.access)
+dataToken=$(cat /etc/practable/st-data.token)
+videoAccess=$(cat /etc/practable/st-video.access)
+videoToken=$(cat /etc/practable/st-video.token)
+
+curl -X POST -H "Content-Type: application/json" -d '{"stream":"video","destination":"'"${videoAccess}"'","id":"0","token":"'"${videoToken}"'"}' http://localhost:8888/api/destinations
+curl -X POST -H "Content-Type: application/json" -d '{"stream":"data","destination":"'"${dataAccess}"'","id":"1","token":"'"${dataToken}"'"}' http://localhost:8888/api/destinations
+
+# New for ${INSTANCE_PATH}
+dataAccess=$(cat /etc/practable/${STREAM_STUB}data.access)
+dataToken=$(cat /etc/practable/${STREAM_STUB}data.token)
+videoAccess=$(cat /etc/practable/${STREAM_STUB}video.access)
+videoToken=$(cat /etc/practable/${STREAM_STUB}video.token)
+
+curl -X POST -H "Content-Type: application/json" -d '{"stream":"video","destination":"'"${videoAccess}"'","id":"2","token":"'"${videoToken}"'"}' http://localhost:8888/api/destinations
+curl -X POST -H "Content-Type: application/json" -d '{"stream":"data","destination":"'"${dataAccess}"'","id":"3","token":"'"${dataToken}"'"}' http://localhost:8888/api/destinations

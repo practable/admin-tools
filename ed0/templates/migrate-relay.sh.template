@@ -1,0 +1,17 @@
+#!/bin/bash
+# to use this file: wget $MIGRATE_FILES/relay.sh -O relay.sh; chmod +x relay.sh
+# sudo su
+# ./relay.sh
+export FILES=$MIGRATE_FILES
+wget $FILES/getid.sh -O getid.sh
+chmod +x ./getid.sh
+export PRACTABLE_ID=$(./getid.sh)
+cd /etc/practable
+wget $FILES/${STREAM_STUB}data.access.$PRACTABLE_ID -O  ${STREAM_STUB}data.access
+wget $FILES/${STREAM_STUB}video.access.$PRACTABLE_ID -O ${STREAM_STUB}video.access
+wget $FILES/${STREAM_STUB}data.token.$PRACTABLE_ID -O   ${STREAM_STUB}data.token
+wget $FILES/${STREAM_STUB}video.token.$PRACTABLE_ID -O  ${STREAM_STUB}video.token
+cd /usr/local/bin
+wget $FILES/session-rules -O session-rules
+chmod +x ./session-rules
+systemctl restart session-rules

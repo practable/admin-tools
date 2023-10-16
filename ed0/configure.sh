@@ -49,7 +49,22 @@ export DEV_STATIC_REPO_URL=https://github.com/practable/static-app-practable-io-
 # Note that book is deliberately not included in this list of sub-dirs
 export DEV_STATIC_SUB_DIRS="['config', 'images', 'info', 'ui']"
 
-# Virtual experiments
+# Experiment setup & migration helpers (optional, but must be defined for script to run)
+export STREAM_STUB=st-ed0-
+# migration helper files, such as env, access, and token files
+# these should be placed in an unguessable location
+# (e.g. in folder named with a uuid)
+# on a server that does NOT allow indexing
+# and removed after the migration is finished
+export MIGRATE_FILES=$(cat ${SECRETS}/files.link)
+# existing access file on experiment 
+export OLD_ACCESS_FILE=data.access
+# regexp to extract the id from the old access file
+export OLD_ID_FILTER='https://relay-access.practable.io/session/(\w*)-data'
+# use arm64 for odroid, armv6l for rpi
+export EXPERIMENT_LINUX=go1.20.1.linux-armv6l.tar.gz
+
+# Virtual experiments (optional, but must be defined for script to run)
 export VE_NUM=3
 export VE_LIFETIME=604800
 export JUMP_BASE_PATH=/api/v1
@@ -135,7 +150,6 @@ envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-relay.yml.template > .
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-relay-service.yml.template > ./playbooks/update-relay-service.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-status.yml.template > ./playbooks/update-status.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-status-service.yml.template > ./playbooks/update-status-service.yml
-
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-static-contents.yml.template > ./playbooks/update-static-contents.yml
 
 
@@ -159,14 +173,14 @@ chmod +x ./relay/get-stats.sh
 # Experiments
 
 mkdir -p ./experiments
-envsubst '${RELAY_AUDIENCE} ${RELAY_SECRET} ${JUMP_AUDIENCE} ${JUMP_SECRET}' < ./templates/experiments-configure.template > ./experiments/configure
+envsubst '${RELAY_AUDIENCE} ${RELAY_SECRET} ${JUMP_AUDIENCE} ${JUMP_SECRET} ${STREAM_STUB}' < ./templates/experiments-configure.template > ./experiments/configure
 chmod +x ./experiments/configure
 
 # no substitutions in these four, at this time
 envsubst '' < ./templates/experiments-relayaccess.template > ./experiments/relayaccess
 chmod +x ./experiments/relayaccess
 
-envsubst '' < ./templates/experiments-relaytoken.template > ./experiments/relaytoken
+envsubst '${STREAM_STUB}' < ./templates/experiments-relaytoken.template > ./experiments/relaytoken
 chmod +x ./experiments/relaytoken
 
 # jump
@@ -179,6 +193,12 @@ chmod +x ./experiments/jumpclient
 
 envsubst '' < ./templates/experiments-jump.service.template > ./experiments/jump.service
 
+# Migration scripts
+envsubst '${MIGRATE_FILES} ${OLD_ACCESS_FILE} ${OLD_ID_FILTER}' < ./templates/migrate-getid.sh.template > ./experiments/getid.sh
+envsubst '${MIGRATE_FILES} ${EXPERIMENT_LINUX}' < ./templates/migrate-jump.sh.template > ./experiments/jump.sh
+envsubst '${MIGRATE_FILES} ${STREAM_STUB}' < ./templates/migrate-relay.sh.template > ./experiments/relay.sh
+envsubst '${STREAM_STUB}' < ./templates/migrate-session-rules.template > ./experiments/session-rules
+envsubst '' < ./templates/migrate-jump.service.template > ./experiments/jump.service
 
 # Virtual experiments
 
