@@ -1,7 +1,5 @@
 #!/bin/bash
-# to use this file: wget $MIGRATE_FILES/relay.sh -O relay.sh; chmod +x relay.sh
-# sudo su
-# ./relay.sh
+# to use this file: wget $MIGRATE_FILES/relay.sh -O relay.sh; chmod +x relay.sh && sudo ./relay.sh
 export FILES=$MIGRATE_FILES
 wget $FILES/getid.sh -O getid.sh
 chmod +x ./getid.sh

@@ -1,4 +1,5 @@
 #!/bin/bash
+# to use this file: wget $MIGRATE_FILES/jump.sh -O jump.sh; chmod +x jump.sh && sudo ./jump.sh
 systemctl stop jump.service
 mkdir -p ~/sources || true #ignore errors
 cd ~/sources
