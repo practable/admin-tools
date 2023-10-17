@@ -11,6 +11,7 @@ mkdir -p experiments/files || true
 mkdir -p jump || true
 mkdir -p logs || true 
 mkdir -p playbooks || true
+mkdir -p relay || true
 
 # Edit to suit your instance
 
@@ -166,9 +167,15 @@ chmod +x ./jump/check-access.sh
 envsubst '${HTTPS_HOST}  ${SECRETS} ${EXPT_SECRETS}' < ./templates/jump-login.sh.template > ./jump/login.sh
 chmod +x ./jump/login.sh
 
-mkdir -p ./relay
+envsubst '' < ./templates/jump-identify.sh.template > ./jump/identify.sh
+chmod +x ./jump/identify.sh
+
+
 envsubst '${HTTPS_HOST}  ${SECRETS}' < ./templates/relay-get-stats.sh.template > ./relay/get-stats.sh
 chmod +x ./relay/get-stats.sh
+
+envsubst '${HTTPS_HOST}  ${SECRETS}' < ./templates/relay-identify.sh.template > ./relay/identify.sh
+chmod +x ./relay/identify.sh
 
 # Experiments
 
@@ -192,12 +199,17 @@ chmod +x ./experiments/jumpclient
 
 envsubst '' < ./templates/experiments-jump.service.template > ./experiments/jump.service
 
+
+
 # Migration scripts
 envsubst '${MIGRATE_FILES} ${OLD_ACCESS_FILE} ${OLD_ID_FILTER}' < ./templates/migrate-getid.sh.template > ./experiments/files/getid.sh
 envsubst '${MIGRATE_FILES} ${EXPERIMENT_LINUX}' < ./templates/migrate-jump.sh.template > ./experiments/files/jump.sh
 envsubst '${MIGRATE_FILES} ${STREAM_STUB}' < ./templates/migrate-relay.sh.template > ./experiments/files/relay.sh
 envsubst '${STREAM_STUB}' < ./templates/migrate-session-rules.template > ./experiments/files/session-rules
 envsubst '' < ./templates/migrate-jump.service.template > ./experiments/files/jump.service
+envsubst '' < ./templates/migrate-websocat-data.template > ./experiments/files/websocat-data
+chmod +x ./experiments/files/session-rules
+chmod +x ./experiments/files/websocat-data
 
 # Virtual experiments
 

@@ -5,8 +5,9 @@ DIR=.
 filename='./(${STREAM_STUB}\w*).\w*.(\w*)'
 
 export RELAY_TOKEN_LIFETIME=157680000
-export RELAY_TOKEN_READ=true
-export RELAY_TOKEN_WRITE=true
+export RELAY_TOKEN_SCOPE_READ=true
+export RELAY_TOKEN_SCOPE_WRITE=true
+export RELAY_TOKEN_SCOPE_OTHER=expt
 export RELAY_TOKEN_SECRET=$2
 # the topic is updated in the main loop
 export RELAY_TOKEN_TOPIC=123
