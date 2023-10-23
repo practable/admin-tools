@@ -22,3 +22,7 @@
        src: /var/log/relay/relay.log
        dest: ../logs/relay.log
 
+   - synchronize:
+       mode: pull
+       src: /var/log/status/status.log
+       dest: ../logs/status.log
