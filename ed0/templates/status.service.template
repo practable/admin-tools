@@ -31,7 +31,7 @@ Environment=STATUS_LOG_LEVEL=info
 Environment=STATUS_LOG_FORMAT=json
 Environment=STATUS_LOG_FILE=/var/log/status/status.log
 Environment=STATUS_PORT_PROFILE=6061
-Environment=STATUS_PORT_SERVE=3007
+Environment=STATUS_PORT_SERVE=$STATUS_PORT_SERVE
 Environment=STATUS_PROFILE=false
 # in production use > 15min 
 Environment=STATUS_QUERY_BOOK_EVERY=1h
