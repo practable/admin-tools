@@ -404,7 +404,11 @@ http {
     	    proxy_pass http://localhost:$JUMP_PORT_RELAY/;
     	}
 
-
+    	location /$INSTANCE_PATH/status/ {
+	       add_header Access-Control-Allow-Origin *;
+    	   try_files $uri $uri/ /$INSTANCE_PATH/status/index.html;
+    	}
+		
        location /$INSTANCE_PATH/status/api/ {
 	
 			
