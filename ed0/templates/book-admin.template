@@ -54,6 +54,9 @@ echo "  4: Replace bookings"
 echo 
 echo "  5: Export old bookings"
 echo "  6: Replace old bookings"
+echo
+echo "  7: lock slot"
+echo "  8: unlock slot"
 echo 
 echo "  b: Export users"
 echo "  c: start insecure chrome"
@@ -100,7 +103,18 @@ then
 	then	
 	    echo "replace old bookings"
 	fi	
-	
+elif [ "$command" = "7" ];
+then
+	read -p 'Enter name of slot to lock:' slot
+	read -p 'Enter message:' message
+	curl -X PUT -H "Authorization: ${BOOK_CLIENT_TOKEN}" "${BOOK_CLIENT_SCHEME}://${BOOK_CLIENT_HOST}${BOOK_CLIENT_BASE_PATH}/admin/slots/${slot}?&available=false&reason=${message}"
+	curl -X GET -H "Authorization: ${BOOK_CLIENT_TOKEN}" "${BOOK_CLIENT_SCHEME}://${BOOK_CLIENT_HOST}${BOOK_CLIENT_BASE_PATH}/admin/slots/${slot}"
+elif [ "$command" = "8" ];
+then
+	read -p 'Enter name of slot to unlock:' slot
+	read -p 'Enter message:' message
+	curl -X PUT -H "Authorization: ${BOOK_CLIENT_TOKEN}" "${BOOK_CLIENT_SCHEME}://${BOOK_CLIENT_HOST}${BOOK_CLIENT_BASE_PATH}/admin/slots/${slot}?available=true&reason=${message}"	
+	curl -X GET -H "Authorization: ${BOOK_CLIENT_TOKEN}" "${BOOK_CLIENT_SCHEME}://${BOOK_CLIENT_HOST}${BOOK_CLIENT_BASE_PATH}/admin/slots/${slot}"
 elif [ "$command" = "b" ];
 then
     		

@@ -149,7 +149,8 @@ chmod +x ./jump/login.sh
 mkdir -p ./relay
 envsubst '${HTTPS_HOST}  ${SECRETS}' < ./templates/relay-get-stats.sh.template > ./relay/get-stats.sh
 chmod +x ./relay/get-stats.sh
-
+envsubst '${HTTPS_HOST}  ${SECRETS}' < ./templates/relay-get-status.sh.template > ./relay/get-status.sh
+chmod +x ./relay/get-status.sh
 
 
 # Virtual experiments
