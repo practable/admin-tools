@@ -210,7 +210,8 @@ envsubst '' < ./templates/migrate-jump.service.template > ./experiments/files/ju
 envsubst '' < ./templates/migrate-websocat-data.template > ./experiments/files/websocat-data
 chmod +x ./experiments/files/session-rules
 chmod +x ./experiments/files/websocat-data
-
+envsubst '${MIGRATE_FILES}' < ./templates/migrate-install.sh.template > ./experiments/files/install.sh
+chmod +x ./experiments/files/install.sh
 # Virtual experiments
 
 # make tokens and access files for jump; relay

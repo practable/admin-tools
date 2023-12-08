@@ -1,0 +1,23 @@
+#!/bin/bash
+# To use this file:
+# wget ${MIGRATE_FILES}/install.sh -O install.sh && chmod +x install.sh && sudo ./install.sh
+
+wget ${MIGRATE_FILES}/websocat-data -O /usr/local/bin/websocat-data
+chmod +x /usr/local/bin/websocat-data
+
+systemctl restart websocat-data & #these can run in background
+systemctl restart socat-data &
+
+wget ${MIGRATE_FILES}/jump.sh -O jump.sh
+chmod +x jump.sh
+./jump.sh
+
+wget ${MIGRATE_FILES}/relay.sh -O relay.sh
+chmod +x relay.sh
+./relay.sh
+
+systemctl status jump
+
+./getid.sh
+
+
