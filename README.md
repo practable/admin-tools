@@ -209,6 +209,7 @@ Continue play book installation
 - `install-book`
 - `install-jump`
 - `install-relay`
+- `install-status`
 
 After that's done, try accessing booking page, to check it is running (likely get an "oops" page as need to rebuild with correct base path). Then configure booking manifests etc
 
