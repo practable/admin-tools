@@ -124,12 +124,13 @@ resource "google_compute_instance" "ed0_vm" {
   allow_stopping_for_update = true
   tags = ["http-server"]
   lifecycle {
-    create_before_destroy = true
+    #create_before_destroy = true
   }
 
   boot_disk {
     initialize_params {
       image = data.google_compute_image.ubuntu_image_ed0.self_link
+	      size = 24
     }
   }
 
@@ -168,7 +169,7 @@ resource "google_compute_instance_group" "ed0" {
   instances =  ["${google_compute_instance.ed0_vm.self_link}"] 
 
   lifecycle {
-    create_before_destroy = true
+    #create_before_destroy = true
   }
   named_port {
     name = "http"
