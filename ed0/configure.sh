@@ -171,6 +171,12 @@ chmod +x ./jump/check-access.sh
 envsubst '${HTTPS_HOST}  ${SECRETS} ${EXPT_SECRETS}' < ./templates/jump-login.sh.template > ./jump/login.sh
 chmod +x ./jump/login.sh
 
+envsubst '${HTTPS_HOST}  ${SECRETS} ${EXPT_SECRETS}' < ./templates/jump-scpr2l.sh.template > ./jump/scpr2l.sh
+chmod +x ./jump/scpr2l.sh
+
+envsubst '${HTTPS_HOST}  ${SECRETS} ${EXPT_SECRETS}' < ./templates/jump-scpl2r.sh.template > ./jump/scpl2r.sh
+chmod +x ./jump/scpl2r.sh
+
 envsubst '' < ./templates/jump-identify.sh.template > ./jump/identify.sh
 chmod +x ./jump/identify.sh
 
