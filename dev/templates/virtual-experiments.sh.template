@@ -1,0 +1,30 @@
+#!/bin/bash
+
+#assume tokens already made by the configure script
+for i in $(seq 0 ${VE_NUM})
+do
+	num=$(printf "%02d" $i)
+	expt="test${num}"
+	JUMP_HOST_TOKEN=$(<"/etc/practable/jump-${expt}.token") \
+				   JUMP_HOST_LOCAL_PORT=22 \
+				   JUMP_HOST_ACCESS=$(<"/etc/practable/jump-${expt}.access") \
+				   jump host &
+done
+
+relay host &
+sleep 1
+/etc/practable/relay-rules.sh
+
+# send some data
+for i in $(seq 0 ${VE_NUM})
+do
+	num=$(printf "%02d" $i)
+	quote | websocat "ws://localhost:8888/ws/data${num}" --text &
+	quote | websocat "ws://localhost:8888/ws/video${num}" --text &
+	
+done
+
+sleep $VE_LIFETIME
+
+
+

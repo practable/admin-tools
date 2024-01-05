@@ -1,7 +1,0 @@
-# source and executables
-.source/
-bin/
-
-# temp files
-*~
-.#*

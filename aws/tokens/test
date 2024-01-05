@@ -1,4 +1,0 @@
-#!/bin/bash
-cp generate temp.py #pytest won't work on this file without .py, seemingly
-pytest temp.py -v
-rm temp.py

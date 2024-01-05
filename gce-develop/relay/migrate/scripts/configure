@@ -1,7 +1,0 @@
-#!/bin/bash
-
-# example: ./configure pvna 05 06 https://dev.practable.io/access ~/secret/sessionrelay.pat 
-
-./relayaccess $4 $1 $2 $3
-./relaytoken $4 $5 
-
