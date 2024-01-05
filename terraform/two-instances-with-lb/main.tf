@@ -119,7 +119,7 @@ resource "google_compute_instance" "dev_vm" {
 
 resource "google_compute_instance" "ed0_vm" {
   name         = "app-practable-io-alpha-ed0"
-  machine_type = "e2-medium"
+  machine_type = "e2-highcpu-2"
   zone         = var.zone
   allow_stopping_for_update = true
   tags = ["http-server"]
