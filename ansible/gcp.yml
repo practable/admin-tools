@@ -1,0 +1,14 @@
+plugin: gcp_compute
+projects:
+  - app-practable-io-alpha
+auth_kind: serviceaccount
+service_account_file: /home/tim/secret/app.practable.io/app-practable-io-alpha-84a62509ce73.json
+keyed_groups:
+  - key: labels
+  - prefix: label
+groups:
+  development: "'environment' in (labels|list)"
+  app_practable_dev: "'app-practable-io-alpha-dev' in name"
+  app_practable_ed0: "'app-practable-io-alpha-ed0' in name"
+  app_practable_ed-dev-ui: "'app-practable-io-alpha-ed-dev-ui' in name"
+
