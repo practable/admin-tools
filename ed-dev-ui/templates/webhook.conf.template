@@ -1,9 +1,9 @@
 - id: git-pull-alonso
-  execute-command: "git-pull-alonso.sh"
+  execute-command: "/var/webhook/git-pull-alonso.sh"
   command-working-directory: "/var/webhook"
 - id: git-pull-david
-  execute-command: "git-pull-david.sh"
+  execute-command: "/var/webhook/git-pull-david.sh"
   command-working-directory: "/var/webhook"
 - id: git-pull-sijie
-  execute-command: "git-pull-sijie.sh"
+  execute-command: "/var/webhook/git-pull-sijie.sh"
   command-working-directory: "/var/webhook"
