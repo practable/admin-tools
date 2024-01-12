@@ -4,16 +4,14 @@ cd /var/www/git/${DAVID_STATIC_REPO_NAME}
 git pull
 
 #make symbolic links for index file for whole domain (only need to do this for one repo)
-ln -s /var/www/git/${DAVID_STATIC_REPO_NAME}/index.html /var/www/${DOMAIN}/${INSTANCE_PATH}/index.html
+ln -fs /var/www/git/${DAVID_STATIC_REPO_NAME}/index.html /var/www/${DOMAIN}/${INSTANCE_PATH}/index.html
 
 #make symbolic link for index file
-ln -s /var/www/git/${DAVID_STATIC_REPO_NAME}/index.html /var/www/${DOMAIN}/${INSTANCE_PATH}/david/index.html
+ln -fs /var/www/git/${DAVID_STATIC_REPO_NAME}/index.html /var/www/${DOMAIN}/${INSTANCE_PATH}/david/index.html
 
 # make symbolic links for sub-dirs
-list=($(echo ${${${${${DAVID_STATIC_SUB_DIRS}/\[/}/\]/}//\'/}// /} | tr "," "\n"))
-dirs=()
-for i in $list; do
-    ln -s /var/www/git/${DAVID_STATIC_REPO_NAME}/$dir /var/www/${DOMAIN}/${INSTANCE_PATH}/david/$dir
-done
-
+ln -fs /var/www/git/${DAVID_STATIC_REPO_NAME}/config /var/www/${DOMAIN}/${INSTANCE_PATH}/david/config
+ln -fs /var/www/git/${DAVID_STATIC_REPO_NAME}/images /var/www/${DOMAIN}/${INSTANCE_PATH}/david/images
+ln -fs /var/www/git/${DAVID_STATIC_REPO_NAME}/info /var/www/${DOMAIN}/${INSTANCE_PATH}/david/info
+ln -fs /var/www/git/${DAVID_STATIC_REPO_NAME}/ui /var/www/${DOMAIN}/${INSTANCE_PATH}/david/ui
 

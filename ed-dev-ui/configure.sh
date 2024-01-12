@@ -36,6 +36,8 @@ export EMAIL=rl.eng@ed.ac.uk
 export ANSIBLE_GROUP=app_practable_ed_dev_ui
 
 
+# Note that the git-pull-<name>.sh scripts don't check the sub-dirs var because of lack of portability of
+# handling arrays in bash - manually update these scripts if change sub-dirs
 # Static content for developer: Alonso 
 export ALONSO_STATIC_REPO_NAME=static-app-practable-io-ed-dev-ui-alonso
 export ALONSO_STATIC_REPO_URL=https://github.com/practable/static-app-practable-io-ed-dev-ui-alonso.git
