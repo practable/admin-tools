@@ -1,0 +1,19 @@
+#!/bin/bash
+# assumes repo has already been pulled at least once
+cd /var/www/git/${DAVID_STATIC_REPO_NAME}
+git pull
+
+#make symbolic links for index file for whole domain (only need to do this for one repo)
+ln -s /var/www/git/${DAVID_STATIC_REPO_NAME}/index.html /var/www/${DOMAIN}/${INSTANCE_PATH}/index.html
+
+#make symbolic link for index file
+ln -s /var/www/git/${DAVID_STATIC_REPO_NAME}/index.html /var/www/${DOMAIN}/${INSTANCE_PATH}/david/index.html
+
+# make symbolic links for sub-dirs
+list=($(echo ${${${${${DAVID_STATIC_SUB_DIRS}/\[/}/\]/}//\'/}// /} | tr "," "\n"))
+dirs=()
+for i in $list; do
+    ln -s /var/www/git/${DAVID_STATIC_REPO_NAME}/$dir /var/www/${DOMAIN}/${INSTANCE_PATH}/david/$dir
+done
+
+

@@ -14,6 +14,12 @@
        state: directory
        mode: '0755'
 
+   - name: Create a directory for Alonso's static files if it does not exist
+     ansible.builtin.file:
+       path: "/var/www/{{ domain }}/{{ instance_path }}/alonso"
+       state: directory
+       mode: '0755'
+
    - name: Create a directory for David's files if it does not exist
      ansible.builtin.file:
        path: "/var/www/{{ domain }}/{{ instance_path }}/david"
@@ -32,6 +38,11 @@
        state: directory
        mode: '0755'
 
+   - name: Git checkout Alonso's static repo
+     ansible.builtin.git:
+       repo: "{{ alonso_static_repo_url }}"
+       dest: "/var/www/git/{{ alonso_static_repo_name }}"
+
    - name: Git checkout David's static repo
      ansible.builtin.git:
        repo: "{{ david_static_repo_url }}"
@@ -47,6 +58,19 @@
        src:  "/var/www/git/{{ david_static_repo_name }}/index.html"
        dest: "/var/www/{{ domain }}/{{ instance_path }}/index.html"
        state: link
+
+   - name: Create symbolic link for /alonso/index.html
+     ansible.builtin.file:
+       src:  "/var/www/git/{{ alonso_static_repo_name }}/index.html"
+       dest: "/var/www/{{ domain }}/{{ instance_path }}/alonso/index.html"
+       state: link
+
+   - name: Create symbolic links for Alonso's sub-directories
+     ansible.builtin.file:
+       src:  "/var/www/git/{{ alonso_static_repo_name }}/{{ item }}"
+       dest: "/var/www/{{ domain }}/{{ instance_path }}/alonso/{{ item }}"
+       state: link
+     loop: "{{ alonso_static_sub_dirs }}"
 
    - name: Create symbolic link for /david/index.html
      ansible.builtin.file:
@@ -73,3 +97,4 @@
        dest: "/var/www/{{ domain }}/{{ instance_path }}/sijie/{{ item }}"
        state: link
      loop: "{{ sijie_static_sub_dirs }}"
+

@@ -1,6 +1,9 @@
 ---
 domain: $DOMAIN
 instance_path: $INSTANCE_PATH
+alonso_static_repo_name: $ALONSO_STATIC_REPO_NAME
+alonso_static_repo_url: $ALONSO_STATIC_REPO_URL
+alonso_static_sub_dirs: $ALONSO_STATIC_SUB_DIRS
 david_static_repo_name: $DAVID_STATIC_REPO_NAME
 david_static_repo_url: $DAVID_STATIC_REPO_URL
 david_static_sub_dirs: $DAVID_STATIC_SUB_DIRS

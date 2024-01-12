@@ -1,0 +1,14 @@
+[Unit]
+Description=webhook for pulling github repos that we are serving
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/usr/bin/webhook -hooks /var/webhook/hooks.yml
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=webhook
+
+[Install]
+WantedBy=multi-user.target
