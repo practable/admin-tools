@@ -31,14 +31,14 @@ http {
     server {
 
         listen 80;
-        server_name $DOMAIN;
-        root /var/www/$DOMAIN;
+        server_name app.practable.io;
+        root /var/www/app.practable.io;
 
         location / { 
            try_files $uri $uri/ /index.html;
         }
 		
-        location /$INSTANCE_PATH/ {
+        location /ed-dev-ui/ {
 
             if ($request_method = 'OPTIONS') {
               add_header 'Access-Control-Allow-Origin' '*';
@@ -58,28 +58,27 @@ http {
            }
 
            add_header Access-Control-Allow-Origin *;
-           try_files $uri $uri/ /$INSTANCE_PATH/index.html;
+           try_files $uri $uri/ /ed-dev-ui/index.html;
         }
 		
-        location /$INSTANCE_PATH/alonso/ {
-          try_files $uri $uri/ /$INSTANCE_PATH/alonso/index.html;
+        location /ed-dev-ui/alonso/ {
+          try_files $uri $uri/ /alonso/index.html;
         }
 
-        location /$INSTANCE_PATH/david/ {
-          try_files $uri $uri/ /$INSTANCE_PATH/david/index.html;
+        location /ed-dev-ui/david/ {
+          try_files $uri $uri/ /david/index.html;
         }
 		
-        location /$INSTANCE_PATH/sijie/ {
-          try_files $uri $uri/ /$INSTANCE_PATH/sijie/index.html;
+        location /ed-dev-ui/sijie/ {
+          try_files $uri $uri/ /sijie/index.html;
         }
-
-        location /$INSTANCE_PATH/david/ui/pvna-twoport-graphical-1.0/ {
-	  add_header Access-Control-Allow-Origin *;
-	  try_files $uri $uri/ $uri.html /$INSTANCE_PATH/david/ui/pvna-twoport-graphical-1.0/index.html;
+		
+        location /ed-dev-ui/david/ui/pvna-twoport-graphical-1.0/ {
+            try_files $uri $uri/ $uri.html /david/ui/pvna-twoport-graphical-1.0/;
+            index index.html;
         }
-
-
-        location /$INSTANCE_PATH/hooks/ {
+		
+        location /ed-dev-ui/hooks/ {
 	
 			
             if ($request_method = 'OPTIONS') {
@@ -134,5 +133,3 @@ http {
     }
   
 }
-
-
