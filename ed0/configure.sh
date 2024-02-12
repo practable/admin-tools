@@ -165,6 +165,9 @@ chmod +x ./book/admin.sh
 envsubst '${BOOK_AUDIENCE}' < ./templates/book-generate-bookings.sh.template > ./book/generate-bookings.sh
 chmod +x ./book/generate-bookings.sh
 
+envsubst '' < ./templates/book-check-exported-bookings.sh.template > ./book/check-exported-bookings.sh
+chmod +x ./book/check-exported-bookings.sh
+
 envsubst '' < ./templates/book-compare-bookings.sh.template > ./book/compare-bookings.sh
 chmod +x ./book/compare-bookings.sh
 
