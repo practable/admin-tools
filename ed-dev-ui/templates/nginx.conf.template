@@ -73,7 +73,11 @@ http {
           try_files $uri $uri/ /sijie/index.html;
         }
 		
-
+        location /$INSTANCE_PATH/david/ui/pvna-twoport-graphical-1.0/ {
+            try_files $uri $uri/ $uri.html /david/ui/pvna-twoport-graphical-1.0/;
+            index index.html;
+        }
+		
         location /$INSTANCE_PATH/hooks/ {
 	
 			
