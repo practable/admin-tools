@@ -162,6 +162,24 @@ envsubst '${BOOK_AUDIENCE} ${BOOK_SECRET} ${DOMAIN}  ${INSTANCE_PATH}' < ./templ
 envsubst '${BOOK_AUDIENCE} ${BOOK_SECRET} ${DOMAIN}  ${INSTANCE_PATH}' < ./templates/book-admin.template > ./book/admin.sh
 chmod +x ./book/admin.sh
 
+envsubst '${BOOK_AUDIENCE}' < ./templates/book-generate-bookings.sh.template > ./book/generate-bookings.sh
+chmod +x ./book/generate-bookings.sh
+
+envsubst '' < ./templates/book-check-exported-bookings.sh.template > ./book/check-exported-bookings.sh
+chmod +x ./book/check-exported-bookings.sh
+
+envsubst '' < ./templates/book-compare-bookings.sh.template > ./book/compare-bookings.sh
+chmod +x ./book/compare-bookings.sh
+
+envsubst '' < ./templates/book-merge-bookings.sh.template > ./book/merge-bookings.sh
+chmod +x ./book/merge-bookings.sh
+
+envsubst '' < ./templates/book-show-counts.sh.template > ./book/show-counts.sh
+chmod +x ./book/show-counts.sh
+
+envsubst '' < ./templates/book-show-current-bookings.sh.template > ./book/show-current-bookings.sh
+chmod +x ./book/show-current-bookings.sh
+
 envsubst '${HTTPS_HOST}  ${SECRETS}' < ./templates/jump-get-stats.sh.template > ./jump/get-stats.sh
 chmod +x ./jump/get-stats.sh
 

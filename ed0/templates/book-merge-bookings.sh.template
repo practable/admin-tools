@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Feb 26 22:01:59 2023
+
+@author: tim
+"""
+import copy
+import json
+import yaml
+   
+with open("./data/generated_bookings.json") as file:
+    gb = json.load(file)
+    
+with open("./data/exported_bookings.json") as file:
+    eb = json.load(file)    
+ 
+
+nb = {}
+
+for item in eb:
+    
+    name = item["name"]
+            
+    if name in gb:
+
+        nb[name] = gb[name] #replace anything with the same name with latest version
+            
+    else:
+        nb[name] = item #otherwise, retain
+
+## add the other items we didn't overwrite already        
+for item in gb:
+    
+    name = item["name"]
+
+    if not name in nb:
+
+        nb[name] = item
+    
+# convert to array
+
+anb = []
+
+for item in nb:
+    anb.append(nb[item])
+        
+with open(r'./data/bookings.yaml', 'w') as file:
+    yaml.dump(anb, file, default_flow_style=False)
+    
+with open(r'./data/bookings.json', 'w') as file:
+    json.dump(anb, file)             
+            
+
+    
+    

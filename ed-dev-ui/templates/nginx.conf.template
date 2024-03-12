@@ -74,10 +74,9 @@ http {
         }
 
         location /$INSTANCE_PATH/david/ui/pvna-twoport-graphical-1.0/ {
-	  add_header Access-Control-Allow-Origin *;
-	  try_files $uri $uri/ $uri.html /$INSTANCE_PATH/david/ui/pvna-twoport-graphical-1.0/index.html;
+	  	  add_header Access-Control-Allow-Origin *;
+	      try_files $uri $uri/ $uri.html /$INSTANCE_PATH/david/ui/pvna-twoport-graphical-1.0/index.html;
         }
-
 
         location /$INSTANCE_PATH/hooks/ {
 	
