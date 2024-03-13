@@ -13,6 +13,7 @@ Some hints or advice for setting up a stand-alone instance or potential enhancem
 ## README Contents
 
 - Repo contents
+- Helpful procedures
 - Network / service architecture
 - Provisioning (on Google Compute Platform)
 - Installing & Administering Practable services
@@ -56,7 +57,9 @@ If you intend to develop new admin tools, please open an issue so we can discuss
 
 ***
 
+## Helpful procedures
 
+Here are some [helpful procedures](./PROCEDURES.md) for checking/restarting services.
 
 
 ## Architecture 
