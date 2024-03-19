@@ -97,3 +97,13 @@ If you are trying to identify the source of disk usage, then the `du` tool is he
 Snaps sometimes fill up ... but the minimum number of versions that must be retained is two.
 
 Consider editing the terraform plan and increasing the disk size.
+
+### Adding a new user interface to the `ed0`
+Assuming it is working on the `ed-dev-ui` server, then:
+
+- rebuild the UI for the `ed0` basepath
+- add to the static repo for `ed0` and `git push` to run webhook (to be implemented)
+- add an entry in the `./ed0/templates/nginx.conf.template` for the new UI
+- run the `ed0` `./configure.sh` script
+- run the ansible playbook `ansible-playbook update-nginx-conf.yaml`
+- edit the manifest in `github.com/practable/manifest-ed0`
