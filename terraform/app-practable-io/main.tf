@@ -114,6 +114,7 @@ resource "google_compute_instance" "dev_vm" {
   boot_disk {
     initialize_params {
       image = data.google_compute_image.ubuntu_image.self_link
+      size = 24
     }
   }
 
