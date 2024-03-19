@@ -101,30 +101,30 @@ resource "google_compute_address" "static-ed-dev-ui" {
   region = var.region
 }
 
-#resource "google_compute_instance" "dev_vm" {
-#  name         = "app-practable-io-alpha-dev"
-#  machine_type = "e2-small"
-#  zone         = var.zone
-#  allow_stopping_for_update = true
-#  tags = ["http-server"]
-#  lifecycle {
-#    #create_before_destroy = true
-#  }
+resource "google_compute_instance" "dev_vm" {
+  name         = "app-practable-io-alpha-dev"
+  machine_type = "e2-small"
+  zone         = var.zone
+  allow_stopping_for_update = true
+  tags = ["http-server"]
+  lifecycle {
+    #create_before_destroy = true
+  }
 
-#  boot_disk {
-#    initialize_params {
-#      image = data.google_compute_image.ubuntu_image.self_link
-#      size = 24
-#    }
-#  }
+  boot_disk {
+    initialize_params {
+      image = data.google_compute_image.ubuntu_image.self_link
+      size = 24
+    }
+  }
 
-#  network_interface {
-#    network = "default"
-#    access_config {
-#      nat_ip = google_compute_address.static-dev.address
-#    }
-#  }
-#}
+  network_interface {
+    network = "default"
+    access_config {
+      nat_ip = google_compute_address.static-dev.address
+    }
+  }
+}
 
 resource "google_compute_instance" "ed-dev-ui_vm" {
   name         = "app-practable-io-alpha-ed-dev-ui"
@@ -183,7 +183,7 @@ resource "google_compute_instance_group" "dev" {
   name        = "instance-group-dev"
   description = "instance group for dev path"
 
-  instances =  []#"${google_compute_instance.dev_vm.self_link}"] 
+  instances =  ["${google_compute_instance.dev_vm.self_link}"]
 
   lifecycle {
     create_before_destroy = true
