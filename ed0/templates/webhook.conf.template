@@ -1,0 +1,3 @@
+- id: git-pull-static
+  execute-command: "/var/webhook/git-pull-static.sh"
+  command-working-directory: "/var/webhook"
