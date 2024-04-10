@@ -8,7 +8,6 @@ export LOCATION=$1
 
 # run shutdown playbook against location
 
-export ANSIBLE_SSH_EXECUTABLE=../jump/ansible-login.sh
 export ANSIBLE_SSH_HOST_KEY_CHECKING=false
 ansible-playbook -vvvv  -i ./inventory helloworld.yml -e "variable_host=$LOCATION"
 

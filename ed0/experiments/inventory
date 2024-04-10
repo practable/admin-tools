@@ -1,3 +1,8 @@
 jcmb2417:
   hosts:
      spin30:
+       ansible_password: rtmprtmp
+       ansible_host: 127.0.0.1
+       ansible_port: 10200
+       ansible_user: pi
+     
