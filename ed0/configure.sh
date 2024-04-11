@@ -216,6 +216,9 @@ chmod +x ./experiments/jci.sh
 envsubst '${SECRETS} ${EXPT_SECRETS}' < ./templates/experiments-jc.sh.template > ./experiments/jc.sh
 chmod +x ./experiments/jc.sh
 
+envsubst '${EXPT_SECRETS}' < ./templates/experiments-locdn.sh.template > ./experiments/locdn.sh
+chmod +x ./experiments/locdn.sh
+
 envsubst '' < ./templates/experiments-jcikill.sh.template > ./experiments/jcikill.sh
 chmod +x ./experiments/jcikill.sh
 
