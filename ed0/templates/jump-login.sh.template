@@ -4,12 +4,8 @@
 # Example ./login pend00
 export EXPT=$1
 
-function freeport(){
- #https://unix.stackexchange.com/questions/55913/whats-the-easiest-way-to-find-an-unused-local-port
- port=$(comm -23 <(seq 49152 65535 | sort) <(ss -Htan | awk '{print $4}' | cut -d':' -f2 | sort -u) | sort -n | head -n 1)
-}
-
-freeport
+# use the port specified in the inventory file to avoid having to edit known_hosts
+port=$(${EXPT_SECRETS}/el $EXPT)
 
 export JUMP_TOKEN_AUDIENCE=${HTTPS_HOST}/jump
 export JUMP_TOKEN_CONNECTION_TYPE=connect
