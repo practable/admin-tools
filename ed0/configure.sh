@@ -220,6 +220,27 @@ chmod +x ./relay/identify.sh
 envsubst '${RELAY_AUDIENCE} ${RELAY_SECRET} ${JUMP_AUDIENCE} ${JUMP_SECRET} ${STREAM_STUB}' < ./templates/experiments-configure.template > ./experiments/configure
 chmod +x ./experiments/configure
 
+envsubst '' < ./templates/experiments-jci.sh.template > ./experiments/jci.sh
+chmod +x ./experiments/jci.sh
+
+envsubst '${SECRETS} ${EXPT_SECRETS}' < ./templates/experiments-jc.sh.template > ./experiments/jc.sh
+chmod +x ./experiments/jc.sh
+
+envsubst '${EXPT_SECRETS}' < ./templates/experiments-locdn.sh.template > ./experiments/locdn.sh
+chmod +x ./experiments/locdn.sh
+
+envsubst '' < ./templates/experiments-jcikill.sh.template > ./experiments/jcikill.sh
+chmod +x ./experiments/jcikill.sh
+
+envsubst '' < ./templates/experiments-jump-playbook.template > ./experiments/jump-playbook
+chmod +x ./experiments/jump-playbook
+
+envsubst '' < ./templates/ansible.cfg.template > ./experiments/ansible.cfg #needed in dir that playbooks are in
+envsubst '' < ./templates/experiments-helloworld.yml.template > ./experiments/helloworld.yml
+envsubst '' < ./templates/experiments-shutdown.yml.template > ./experiments/shutdown.yml
+
+
+
 # no substitutions in these four, at this time
 envsubst '' < ./templates/experiments-relayaccess.template > ./experiments/relayaccess
 chmod +x ./experiments/relayaccess
