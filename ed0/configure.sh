@@ -221,8 +221,8 @@ chmod +x ./experiments/jci.sh
 envsubst '' < ./templates/experiments-jcikill.sh.template > ./experiments/jcikill.sh
 chmod +x ./experiments/jcikill.sh
 
-envsubst '' < ./templates/experiments-helloworld.yaml.template > ./experiments/helloworld.yaml
-envsubst '' < ./templates/experiments-shutdown.yaml.template > ./experiments/shutdown.yaml
+envsubst '' < ./templates/experiments-helloworld.yml.template > ./experiments/helloworld.yml
+envsubst '' < ./templates/experiments-shutdown.yml.template > ./experiments/shutdown.yml
 
 
 # no substitutions in these four, at this time
