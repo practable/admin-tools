@@ -1,0 +1,10 @@
+---
+- name: shutdown
+  hosts: "{{ variable_host | default('experiments') }}"
+  become: yes
+  gather_facts: no
+
+  tasks:
+    
+  - name: Unconditionally shut down the machine with all defaults
+    community.general.shutdown:

@@ -210,6 +210,21 @@ chmod +x ./relay/identify.sh
 envsubst '${RELAY_AUDIENCE} ${RELAY_SECRET} ${JUMP_AUDIENCE} ${JUMP_SECRET} ${STREAM_STUB}' < ./templates/experiments-configure.template > ./experiments/configure
 chmod +x ./experiments/configure
 
+envsubst '' < ./templates/ansible.cfg.template > ./experiments/ansible.cfg
+
+envsubst '' < ./templates/experiments-jci.sh.template > ./experiments/jci.sh
+chmod +x ./experiments/jci.sh
+
+envsubst '${SECRETS} ${EXPT_SECRETS}' < ./templates/experiments-jc.sh.template > ./experiments/jc.sh
+chmod +x ./experiments/jci.sh
+
+envsubst '' < ./templates/experiments-jcikill.sh.template > ./experiments/jcikill.sh
+chmod +x ./experiments/jcikill.sh
+
+envsubst '' < ./templates/experiments-helloworld.yaml.template > ./experiments/helloworld.yaml
+envsubst '' < ./templates/experiments-shutdown.yaml.template > ./experiments/shutdown.yaml
+
+
 # no substitutions in these four, at this time
 envsubst '' < ./templates/experiments-relayaccess.template > ./experiments/relayaccess
 chmod +x ./experiments/relayaccess
