@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+
 cat .jci.pids |
 {
 while read -r pid 
