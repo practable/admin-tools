@@ -199,6 +199,10 @@ chmod +x ./jump/check-access.sh
 envsubst '${HTTPS_HOST}  ${SECRETS} ${EXPT_SECRETS}' < ./templates/jump-login.sh.template > ./jump/login.sh
 chmod +x ./jump/login.sh
 
+envsubst '${HTTPS_HOST}  ${SECRETS} ${EXPT_SECRETS}' < ./templates/jump-login-with-password.sh.template > ./jump/login-with-password.sh
+chmod +x ./jump/login-with-password.sh
+
+
 envsubst '${HTTPS_HOST}  ${SECRETS} ${EXPT_SECRETS}' < ./templates/jump-scpr2l.sh.template > ./jump/scpr2l.sh
 chmod +x ./jump/scpr2l.sh
 
@@ -235,10 +239,11 @@ chmod +x ./experiments/jcikill.sh
 envsubst '' < ./templates/experiments-jump-playbook.template > ./experiments/jump-playbook
 chmod +x ./experiments/jump-playbook
 
+
 envsubst '' < ./templates/ansible.cfg.template > ./experiments/ansible.cfg #needed in dir that playbooks are in
 envsubst '' < ./templates/experiments-helloworld.yml.template > ./experiments/helloworld.yml
 envsubst '' < ./templates/experiments-shutdown.yml.template > ./experiments/shutdown.yml
-
+envsubst '${EXPT_SECRETS}' < ./templates/experiments-create-practable-user.yml.template > ./experiments/create-practable-user.yml
 
 
 # no substitutions in these four, at this time
