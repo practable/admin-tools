@@ -7,5 +7,5 @@ export group=$3
 
 ./jci.sh $inventory $group
 export ANSIBLE_SSH_HOST_KEY_CHECKING=false
-ansible-playbook -i $1 $2 -e "variable_host=$group"
+ansible-playbook --private-key=${EXPT_SECRETS}/expt_rsa -i $1 $2 -e "variable_host=$group"
 ./jcikill.sh 

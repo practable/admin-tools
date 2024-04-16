@@ -236,7 +236,7 @@ chmod +x ./experiments/locdn.sh
 envsubst '' < ./templates/experiments-jcikill.sh.template > ./experiments/jcikill.sh
 chmod +x ./experiments/jcikill.sh
 
-envsubst '' < ./templates/experiments-jump-playbook.template > ./experiments/jump-playbook
+envsubst '${EXPT_SECRETS}' < ./templates/experiments-jump-playbook.template > ./experiments/jump-playbook
 chmod +x ./experiments/jump-playbook
 
 
@@ -244,7 +244,12 @@ envsubst '' < ./templates/ansible.cfg.template > ./experiments/ansible.cfg #need
 envsubst '' < ./templates/experiments-helloworld.yml.template > ./experiments/helloworld.yml
 envsubst '' < ./templates/experiments-shutdown.yml.template > ./experiments/shutdown.yml
 envsubst '${EXPT_SECRETS}' < ./templates/experiments-create-practable-user.yml.template > ./experiments/create-practable-user.yml
-
+export USER=odroid
+envsubst '${USER}' < ./templates/experiments-lock-default-user.yml.template > ./experiments/lock-default-user-odroid.yml
+export USER=pi
+envsubst '${USER}' < ./templates/experiments-lock-default-user.yml.template > ./experiments/lock-default-user-pi.yml
+export USER=ubuntu
+envsubst '${USER}' < ./templates/experiments-lock-default-user.yml.template > ./experiments/lock-default-user-ubuntu.yml
 
 # no substitutions in these four, at this time
 envsubst '' < ./templates/experiments-relayaccess.template > ./experiments/relayaccess
