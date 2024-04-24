@@ -174,6 +174,16 @@ resource "google_compute_instance" "ed0_vm" {
       nat_ip = google_compute_address.static-ed0.address
     }
   }
+
+  service_account {
+    # Google recommends custom service accounts with `cloud-platform` scope with
+    # specific permissions granted via IAM Roles.
+    # This approach lets you avoid embedding secret keys or user credentials
+    # in your instance, image, or app code
+    email  = "469911504726-compute@developer.gserviceaccount.com"
+    scopes = ["cloud-platform"]
+  }
+
 }
 
 
