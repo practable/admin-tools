@@ -1,7 +1,20 @@
 # ed0 guidance
 
+## restarting the instance
 
-## Genearing booking links 
+check current bookings are finished
+export any future bookings
+restart the instance
+
+upload the manifest 
+import future bookings
+check experiment status
+
+If the disk has been wiped, then full install with the ansible playbooks is needed
+
+
+
+## Generating booking links 
 
 Booking links are generated with `./book/generate_bookings` using  `./data/booking-plan.yml`
 

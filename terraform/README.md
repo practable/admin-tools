@@ -2,6 +2,19 @@
 
 Note that the status of the terraform project has recently changed and we may need to consider moving to an alternative.
 
+## Helpful notes
+
+### Running from new location
+
+If using admin-tools from a new location or have re-pulled git repo:
+run `terraform/app.practable.io/setup.sh` to symlink to ssl private key and cert in credentials repo
+run `terraform init`
+run `terraform plan` - should see that config matches state
+
+### Updating an instance size in place
+
+This took around 2m30s when upgrading `ed0` from `e2-highcpu-2` to `e2-standard-2`
+
 ## Background
 
 Terraform represents hardware in code, which self-documents the setup of the cloud servers, and allows the usage of features that are not currently provided by the cloud GUI (e.g. load balancing special features that we need).
