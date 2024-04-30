@@ -87,6 +87,11 @@ data "google_compute_image" "ubuntu_image_ed-dev-ui" {
   project = "ubuntu-os-cloud"
 }
 
+data "google_compute_image" "ubuntu_image_ed-log-dev" {
+  name = "ubuntu-2004-focal-v20230918"
+  project = "ubuntu-os-cloud"
+}
+
 resource "google_compute_address" "static-dev" {
   name = "ipv4-address-dev"
   region = var.region
@@ -98,6 +103,11 @@ resource "google_compute_address" "static-ed0" {
 
 resource "google_compute_address" "static-ed-dev-ui" {
   name = "ipv4-address-ed-dev-ui"
+  region = var.region
+}
+
+resource "google_compute_address" "static-ed-log-dev" {
+  name = "ipv4-address-ed-log-dev"
   region = var.region
 }
 
@@ -186,6 +196,40 @@ resource "google_compute_instance" "ed0_vm" {
 
 }
 
+resource "google_compute_instance" "ed-log-dev_vm" {
+  name         = "app-practable-io-alpha-ed-log-dev"
+  machine_type = "e2-small"
+  zone         = var.zone
+  allow_stopping_for_update = true
+  tags = ["http-server"]
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  boot_disk {
+    initialize_params {
+      image = data.google_compute_image.ubuntu_image_ed-log-dev.self_link
+	  size = 18
+    }
+  }
+
+  network_interface {
+    network = "default"
+    access_config {
+      nat_ip = google_compute_address.static-ed-log-dev.address
+    }
+  }
+  
+  service_account {
+    # Google recommends custom service accounts with `cloud-platform` scope with
+    # specific permissions granted via IAM Roles.
+    # This approach lets you avoid embedding secret keys or user credentials
+    # in your instance, image, or app code
+    email  = "469911504726-compute@developer.gserviceaccount.com"
+    scopes = ["cloud-platform"]
+  }
+}
+
 
 
 #https://stackoverflow.com/questions/65313133/error-invalid-instance-urls-resource-google-compute-instance-group-t-compute
@@ -228,6 +272,23 @@ resource "google_compute_instance_group" "ed-dev-ui" {
   description = "instance group for ed-dev-ui path"
 
   instances =  ["${google_compute_instance.ed-dev-ui_vm.self_link}"] 
+
+  lifecycle {
+    #create_before_destroy = true
+  }
+  named_port {
+    name = "http"
+    port = "80"
+  }
+
+  zone = var.zone
+}
+
+resource "google_compute_instance_group" "ed-log-dev" {
+  name        = "instance-group-ed-log-dev"
+  description = "instance group for ed-log-dev path"
+
+  instances =  ["${google_compute_instance.ed-log-dev_vm.self_link}"] 
 
   lifecycle {
     #create_before_destroy = true
@@ -416,6 +477,37 @@ module "gce-lb-http" {
         enable = false
       }
     }	
+    ed-log-dev = {
+      protocol    = "HTTP"
+	  load_balancing_scheme = "EXTERNAL"
+      port        = 80
+      port_name   = "http"
+	  # this sets the maximum websocket connection time to 1 year
+	  # keepalives do not extend this (it seems)
+      timeout_sec = 31536000
+      enable_cdn  = false
+
+      health_check = {
+	    check_interval_sec = 2
+		timeout_sec = 1
+        request_path = "/ed-log-dev/"
+        port         = 80
+		logging = true
+      }
+
+      log_config = {
+        enable = true
+      }
+
+      groups = [
+        {
+          group = google_compute_instance_group.ed-log-dev.id
+        }
+      ]
+      iap_config = {
+        enable = false
+      }
+    }	
   }
 }
 
@@ -456,6 +548,13 @@ resource "google_compute_url_map" "urlmap" {
         "/ed-dev-ui/*"
       ]
       service = module.gce-lb-http.backend_services["ed-dev-ui"].self_link
+    }
+    path_rule {
+      paths = [
+        "/ed-log-dev",
+        "/ed-log-dev/*"
+      ]
+      service = module.gce-lb-http.backend_services["ed-log-dev"].self_link
     }
     
   }
