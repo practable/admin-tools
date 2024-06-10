@@ -5,9 +5,29 @@
   gather_facts: no
 
   tasks:
+    - name: Install go
+      community.general.snap:
+        name: go
+        classic: yes
 
-    - name: Install webhook
-      apt: name=webhook state=latest
+    - name: Remove community version of webhook, if installed
+      apt: name=webhook state=absent
+
+    - git:
+       repo: https://github.com/adnanh/webhook
+       dest: /var/lib/practable/sources/webhook
+       update: yes
+       version: master
+
+    - name: webhook build
+      command: go build
+      args:
+        chdir: /var/lib/practable/sources/webhook
+
+    - name: webhook install
+      command: cp webhook /usr/bin/webhook
+      args:
+        chdir: /var/lib/practable/sources/webhook 
 
     - name: Create a directory for webhook configuration file and scripts
       ansible.builtin.file:
