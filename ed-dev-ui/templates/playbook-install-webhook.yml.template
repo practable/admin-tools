@@ -5,6 +5,13 @@
   gather_facts: no
 
   tasks:
+  
+    - name: stop webhook
+      service:
+        name: webhook
+        state: stopped
+        enabled: yes
+      ignore_errors: True
     - name: Install go
       community.general.snap:
         name: go
@@ -67,6 +74,7 @@
       service:
         name: webhook
         state: started
+        daemon_reload: true
         enabled: yes
 
     - name: get service facts
