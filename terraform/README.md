@@ -93,3 +93,38 @@ No changes. Your infrastructure matches the configuration.
 
 Terraform has compared your real infrastructure against your configuration and found no differences, so no changes are needed.
 ```
+
+
+## web.practable.io
+
+This is a separate piece of infrastructure in a separate project, reachable on the web at `https://practable.io`
+
+
+### state storage
+
+we need a new [bucket for state storage](https://cloud.google.com/docs/terraform/resource-management/store-state)
+
+first, change the gcloud project (do this each time you need to switch to working on a different project)
+
+```
+gcloud config set project $PROJECT_ID
+```
+
+During the initial setup, additional steps are required, like enabling APIs (done responsively) and setting quotas
+
+```
+gcloud auth application-default set-quota-project $PROJECT_ID
+```
+
+Enable storage API
+```
+gcloud services enable storage.googleapis.com
+```
+
+check what ubuntu images are available (requires compute API):
+
+```
+gcloud compute images list | grep ubuntu
+```
+
+Need a service account for this project .... comes default with project, go to service accounts and add a json key, download it.
