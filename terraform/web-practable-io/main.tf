@@ -83,7 +83,7 @@ resource "google_compute_address" "static-default" {
 
 resource "google_compute_instance" "default_vm" {
   name         = "web-practable-io-alpha-default"
-  machine_type = "n1-standard-1"
+  machine_type = "e2-medium"
   zone         = var.zone
   allow_stopping_for_update = true
   tags = ["http-server"]
