@@ -139,10 +139,11 @@ Go to the directory associated with the isntance. Usually you need to run
 
 ### Prepare to alter the infrastructure
 
-go to the terraform directory, then the appropriate subdirectory
+go to the terraform directory, then the appropriate subdirectory, and follow the authentication instructions (again).
 
 ```
 terraform init
+terraform plan
 ```
 
 
