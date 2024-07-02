@@ -92,6 +92,11 @@ data "google_compute_image" "ubuntu_image_ed-log-dev" {
   project = "ubuntu-os-cloud"
 }
 
+data "google_compute_image" "ubuntu_image_default" {
+  name = "ubuntu-2004-focal-v20230918"
+  project = "ubuntu-os-cloud"
+}
+
 resource "google_compute_address" "static-dev" {
   name = "ipv4-address-dev"
   region = var.region
@@ -108,6 +113,11 @@ resource "google_compute_address" "static-ed-dev-ui" {
 
 resource "google_compute_address" "static-ed-log-dev" {
   name = "ipv4-address-ed-log-dev"
+  region = var.region
+}
+
+resource "google_compute_address" "static-default" {
+  name = "ipv4-address-default"
   region = var.region
 }
 
@@ -230,7 +240,38 @@ resource "google_compute_instance" "ed-log-dev_vm" {
   }
 }
 
+resource "google_compute_instance" "default_vm" {
+  name         = "app-practable-io-alpha-default"
+  machine_type = "e2-micro"
+  zone         = var.zone
+  allow_stopping_for_update = true
+  tags = ["http-server"]
+  lifecycle {
+    create_before_destroy = true
+  }
 
+  boot_disk {
+    initialize_params {
+      image = data.google_compute_image.ubuntu_image_default.self_link
+    }
+  }
+
+  network_interface {
+    network = "default"
+    access_config {
+      nat_ip = google_compute_address.static-default.address
+    }
+  }
+  
+  service_account {
+    # Google recommends custom service accounts with `cloud-platform` scope with
+    # specific permissions granted via IAM Roles.
+    # This approach lets you avoid embedding secret keys or user credentials
+    # in your instance, image, or app code
+    email  = "469911504726-compute@developer.gserviceaccount.com"
+    scopes = ["cloud-platform"]
+  }
+}
 
 #https://stackoverflow.com/questions/65313133/error-invalid-instance-urls-resource-google-compute-instance-group-t-compute
 resource "google_compute_instance_group" "dev" {
@@ -301,37 +342,23 @@ resource "google_compute_instance_group" "ed-log-dev" {
   zone = var.zone
 }
 
-module "mig_template" {
-  source     = "terraform-google-modules/vm/google//modules/instance_template"
-  version    = "~> 7.9"
-  network = "default"
-  subnetwork = "default"
-  service_account = {
-    email  = ""
-    scopes = ["cloud-platform"]
+resource "google_compute_instance_group" "default" {
+  name        = "instance-group-default"
+  description = "instance group for default path"
+
+  instances =  ["${google_compute_instance.default_vm.self_link}"] 
+
+  lifecycle {
+    #create_before_destroy = true
   }
-  name_prefix    = var.network_name
-  startup_script = data.template_file.group-startup-script.rendered
-  tags = [
-    var.network_name,
-    module.cloud-nat.router_name
-  ]
+  named_port {
+    name = "http"
+    port = "80"
+  }
+
+  zone = var.zone
 }
 
-module "mig" {
-  source            = "terraform-google-modules/vm/google//modules/mig"
-  version           = "~> 7.9"
-  instance_template = module.mig_template.self_link
-  region            = var.region
-  hostname          = var.network_name
-  target_size       = 2
-  named_ports = [{
-    name = "http",
-    port = 80
-  }]
-  network = "default"
-  subnetwork = "default"
-}
 
 
 
@@ -376,7 +403,7 @@ module "gce-lb-http" {
 
       groups = [
         {
-          group = module.mig.instance_group
+          group = google_compute_instance_group.default.id
         }
       ]
       iap_config = {
