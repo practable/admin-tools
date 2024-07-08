@@ -1,0 +1,52 @@
+---
+- name: install wordpress
+  hosts: ${ANSIBLE_GROUP}
+  become: yes
+  gather_facts: no
+
+  tasks:
+    - name: Upgrade system
+      apt: upgrade=dist update_cache=yes
+      
+    - name: Install a list of packages
+      ansible.builtin.apt:
+        pkg:
+        - mariadb-server
+        - mariadb-client
+        - php8.1
+        - php8.1-fpm
+        - php8.1-mysql
+        - php-common
+        - php8.1-cli
+        - php8.1-common
+        - php8.1-opcache
+        - php8.1-readline
+        - php8.1-mbstring
+        - php8.1-xml
+        - php8.1-gd
+        - php8.1-curl
+
+    - name: start mariadb
+      service:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - name: start php8.1--fpm
+      service:
+        name: php8.1-fpm
+        state: started
+        enabled: yes
+
+    - name: get service facts
+      service_facts:
+
+    - name: check mariadb installed
+      fail:
+        msg: "mariadb is not installed"
+      when: ansible_facts.services["mariadb.service"] is not defined
+      
+    - name: check php8.1-fpm installed
+      fail:
+        msg: "php8.1-fpm is not installed"
+      when: ansible_facts.services["php8.1-fpm.service"] is not defined     

@@ -54,3 +54,5 @@ envsubst '${DOMAIN} ${HTTPS_HOST}' < ./templates/nginx.conf.template > ./autogen
 
 envsubst '${ANSIBLE_GROUP} ${SSL_DOMAIN} ${EMAIL}' < ./templates/playbook-install-nginx.yml.template > ./playbooks/install-nginx.yml
 envsubst '${ANSIBLE_GROUP} ${SSL_DOMAIN} ${EMAIL}' < ./templates/playbook-update-nginx-conf.yml.template > ./playbooks/update-nginx-conf.yml
+#envsubst '${ANSIBLE_GROUP} ${SSL_DOMAIN} ${EMAIL}' < ./templates/playbook-install-wordpress.yml.template > ./playbooks/install-wordpress.yml
+envsubst '${ANSIBLE_GROUP} ${SSL_DOMAIN} ${EMAIL}' < ./templates/playbook-install-wordpress-prereq.yml.template > ./playbooks/install-wordpress-prereq.yml
