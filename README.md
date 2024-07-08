@@ -124,6 +124,8 @@ $ ansible app_practable_ed0 -m ping
 }
 ```
 
+Note that the best way to add extra projects to the dynamic inventory is to grant access to the service account from the original project you created, in other projects, as an Editor (go to IAM then "add"). Then you only need one service account to access the different projects. Attempting to upload a common key to service accounts created in each project does not work because the json format for the private key needs to know the email address of the service account, which is tied to one project only, so no two service accounts can have the same details. See [here](https://gtseres.medium.com/using-service-accounts-across-projects-in-gcp-cf9473fef8f0) for a quick guide.
+
 ### install terraform
 
 [installation instructions](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
@@ -157,4 +159,3 @@ Here are some [helpful procedures](./PROCEDURES.md) for checking/restarting serv
 ## Architecture
 
 Some further description of the [architecture](ARCHITECTURE.md) for those making modifications to the infrastructure.
-
