@@ -53,3 +53,58 @@ There should now be an empty set of tables, which can be verified by
 show tables;
 ```
 
+## Install wordpress
+
+In the terminal, move to the `web` directory and login (assuming you have already run configure.sh) to the GCP instance (web-practable-io-alpha-default):
+
+```
+cd <path-to>/admin-tools/web
+./login.sh
+```
+
+On the GCP instance, download the latest version of wordpress:
+
+```
+wget https://wordpress.org/latest.tar.gz
+```
+
+And then extract:
+
+```
+tar -xzvf latest.tar.gz
+```
+
+This will create a directory called wordpress.
+
+In that directory make a copy of the `wp-config-sample.php` file and rename it `wp-config.php`:
+
+```
+cd wordpress
+sudo cp wp-config-sample.php wp-config.php
+```
+
+Edit the wp-config.php file to include the database details created earlier. The authentication keys can be generated [here](https://api.wordpress.org/secret-key/1.1/salt/)
+
+```
+sudo nano wp-config.php
+```
+
+Move the contents of the wordpress folder to the location you are hosting the wordpress site e.g.:
+
+```
+sudo mv ./wordpress/* /var/www/<domain-name>/
+```
+
+You may need to make nginx the owner of that directory:
+
+```
+sudo chown -R www-data:www-data /var/www/<domain-name>
+```
+
+On a browser, start the wordpress installation by going to:
+
+```
+https://<domain-name>/wp-admin/install.php
+```
+
+And complete the details there to install wordpress.
