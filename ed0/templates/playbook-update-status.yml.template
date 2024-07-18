@@ -21,7 +21,7 @@
        repo: https://github.com/practable/status.git
        dest: /var/lib/practable/sources/status
        update: yes
-       version: develop
+       version: v0.1.1
 
    - name: status build
      command: ./build.sh
