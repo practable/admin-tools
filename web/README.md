@@ -108,3 +108,53 @@ https://<domain-name>/wp-admin/install.php
 ```
 
 And complete the details there to install wordpress.
+
+
+## Install astra pro
+
+we want to modify background colours etc, so have paid for a year of astra pro (3 Oct 2024)
+
+This needs an addon to be uploaded, but it exceeds the default file size limit
+
+we need to change php.ini for our php installation (not wordpress)
+
+you can find your `php.ini` file with 
+
+```
+php -i | grep ini
+```
+
+For our initial installation that yields our location as `/etc/php/8.1/cli/php.ini`
+
+Except that only changes the cli settings, so we need to edit `/etc/php/8.1/fpm/php.ini` instead:-
+
+Change these lines from (other lines inbetween snipped for clarity)
+
+```
+; https://php.net/max-execution-time
+max_execution_time = 30
+; https://php.net/max-input-time
+max_input_time = 60
+; https://php.net/post-max-size
+post_max_size = 8M
+; https://php.net/upload-max-filesize
+upload_max_filesize = 2M
+```
+
+to
+
+```
+; https://php.net/max-execution-time
+max_execution_time = 300
+; https://php.net/max-input-time
+max_input_time = 300
+; https://php.net/post-max-size
+post_max_size = 256M
+; https://php.net/upload-max-filesize
+upload_max_filesize = 64M
+```
+
+Then restart php
+```
+sudo systemctl restart php8.1-fpm.service 
+```
