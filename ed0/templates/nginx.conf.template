@@ -107,6 +107,11 @@ http {
             index index.html;
         }
         
+        location /$INSTANCE_PATH/static/ui/pvna-oneport-graphical-1.0/ {
+        	add_header Access-Control-Allow-Origin *;
+            try_files $uri $uri/ $uri.html /$INSTANCE_PATH/static/ui/pvna-oneport-graphical-1.0/index.html;
+        }
+        
         location /$INSTANCE_PATH/static/ui/pvna-twoport-graphical-1.0/ {
         	add_header Access-Control-Allow-Origin *;
             try_files $uri $uri/ $uri.html /$INSTANCE_PATH/static/ui/pvna-twoport-graphical-1.0/index.html;
