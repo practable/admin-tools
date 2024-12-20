@@ -1,5 +1,17 @@
 # ed0 guidance
 
+## Logging in from campus
+
+If you get asked for an sshgate password, your kerberos pre-authorisation is stale, so refresh that, e.g.
+```
+kinit youruun@EASE.ED.AC.UK
+```
+
+Note the formatting of the username - it's not your actual email.
+
+Also, you need to have installed kerberos and added an ssh config - see [credentials-uoe-soe](https://github.com/practable/credentials-uoe-soe/blob/main/dot-ssh/config)init repo
+
+
 ## restarting the instance
 
 check current bookings are finished
