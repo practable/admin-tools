@@ -1,0 +1,14 @@
+---
+- name: lock default users 
+  hosts: "{{ variable_host | default('experiments') }}"
+  become: yes
+  gather_facts: no
+
+  tasks:
+ 
+  - name: lock default user ${USER}
+    user:
+      name: "${USER}"
+      password_lock: true
+  
+  

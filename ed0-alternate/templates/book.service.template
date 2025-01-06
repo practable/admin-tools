@@ -1,0 +1,32 @@
+[Unit]
+Description=github.com/practable/book serve
+After=network.target 
+
+[Service]
+LimitNOFILE=99999
+Environment=BOOK_ACCESS_TOKEN_TTL=1h
+Environment=BOOK_ADMIN_SECRET=$BOOK_SECRET
+Environment=BOOK_AUDIENCE=$BOOK_AUDIENCE
+Environment=BOOK_RELAY_SECRET=$RELAY_SECRET
+Environment=BOOK_LOG_LEVEL=info
+Environment=BOOK_LOG_FORMAT=json
+Environment=BOOK_LOG_FILE=/var/log/book/book.log
+Environment=BOOK_MIN_USERNAME_LENGTH=6
+Environment=BOOK_PORT=$BOOK_PORT
+Environment=BOOK_PROFILE=false
+Environment=BOOK_TIDY_EVERY=5m
+
+Type=simple
+Restart=always
+ExecStart=/usr/local/bin/book serve
+
+PermissionsStartOnly=true
+ExecStartPre=/bin/mkdir -p /var/log/book
+ExecStartPre=/bin/chown syslog:adm /var/log/book
+ExecStartPre=/bin/chmod 755 /var/log/book
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+

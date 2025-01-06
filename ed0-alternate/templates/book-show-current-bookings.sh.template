@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Feb 26 22:32:42 2023
+
+@author: tim
+"""
+import datetime
+import json
+import pyrfc3339 as rfc3339
+import pytz
+import yaml
+   
+def all_equal(iterator):
+    iterator = iter(iterator)
+    try:
+        first = next(iterator)
+    except StopIteration:
+        return True
+    return all(first == x for x in iterator)
+
+yaml.add_representer(datetime.datetime, lambda self, data:
+                     self.represent_scalar('tag:yaml.org,2002:str', data.replace(tzinfo=None).isoformat('T') +'Z'))  
+    
+with open("./data/exported_bookings.json") as file:
+    eb = json.load(file)    
+    
+now = pytz.UTC.localize(datetime.datetime.now())
+soon = now + datetime.timedelta(minutes=10)
+
+on_now = {}
+on_soon = {}
+soonest = now + datetime.timedelta(days=99)
+
+def is_now(start, end):
+    
+    return start < now and end > now
+    
+def is_soon(start, end):    
+    
+    return start > now and start < soon
+     
+    
+
+for item in eb:
+    start = rfc3339.parse(item["when"]["start"])
+    end = rfc3339.parse(item["when"]["end"])
+    if is_now(start,end):
+        on_now.append(item)
+    if is_soon(start, end):
+        on_soon.append(item)
+    if  start < soonest:
+        soonest = start
+        
+print("%d on now"%(len(on_now)))
+print("%d on soon"%(len(on_soon)))
+print("soonest on at %s"%(soonest))
+       
+    
+with open(r'./data/on_now.yaml', 'w') as file:
+    yaml.dump(on_now, file, default_flow_style=False)  
+
+with open(r'./data/on_soon.yaml', 'w') as file:
+    yaml.dump(on_soon, file, default_flow_style=False)  

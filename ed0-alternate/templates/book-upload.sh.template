@@ -1,0 +1,22 @@
+#!/bin/bash
+
+export BOOK_CLIENT_SECRET=$(cat ${SECRETS}/book.pat)
+export BOOK_CLIENT_TOKEN_TTL=5m
+export BOOK_CLIENT_TOKEN_ADMIN=true
+export BOOK_CLIENT_TOKEN_AUD=${BOOK_AUDIENCE}
+export BOOK_CLIENT_TOKEN_SUB=admin
+export BOOK_CLIENT_TOKEN=$(../bin/book token)
+
+export BOOK_CLIENT_SCHEME=https
+export BOOK_CLIENT_HOST=${DOMAIN}
+export BOOK_CLIENT_BASE_PATH=${INSTANCE_PATH}/book${BOOK_BASE_PATH}
+export BOOK_CLIENT_FORMAT=YAML
+
+c=$(./check.sh | wc -l)
+if ! [ $c -eq 0 ]; then
+        echo "Manifest check returned errors, did not upload"
+		./check.sh
+		exit 1
+fi
+
+../bin/book manifest replace manifest.yaml

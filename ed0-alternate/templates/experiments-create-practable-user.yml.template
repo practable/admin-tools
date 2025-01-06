@@ -1,0 +1,29 @@
+---
+- name: create practable user
+  hosts: "{{ variable_host | default('experiments') }}"
+  become: yes
+  gather_facts: no
+
+  tasks:
+ 
+  - name: Add practable user
+    user:
+      name: "practable"
+      groups: sudo
+      append: true
+      state: present
+      createhome: true
+      shell: /bin/bash
+  
+  - name: Make sudo without password for practable user
+    copy:
+      dest: /etc/sudoers.d/80-ansible-sudo-user
+      content: "practable ALL=(ALL) NOPASSWD:ALL"
+      mode: 0440
+  
+  - name: Set up authorized keys for the practable user
+    authorized_key: user=practable key="{{item}}"
+    with_file:
+      - ${EXPT_SECRETS}/expt_rsa.pub
+  
+  
