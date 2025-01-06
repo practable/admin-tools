@@ -627,6 +627,12 @@ resource "google_compute_address" "static-ed0-alternate" {
 }
 
 resource "google_compute_instance" "ed0-alternate_vm" {
+  labels = {
+    "goog-ops-agent-policy" = "v2-x86-template-1-4-0"
+  }
+  metadata = {
+    "enable-osconfig" = "TRUE"
+  }
   name = "app-practable-io-alpha-ed0-alternate"
   machine_type = "e2-standard-2"
   zone = var.zone
