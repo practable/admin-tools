@@ -637,7 +637,7 @@ resource "google_compute_instance" "ed0-alternate_vm" {
   name = "app-practable-io-alpha-ed0-alternate"
   machine_type = "e2-standard-2"
   zone = var.zone
-  tags = ["ed0-alternate"]
+  tags = ["http-server"]
   boot_disk {
     initialize_params {
       image = data.google_compute_image.ubuntu_image_ed0-alternate.self_link
