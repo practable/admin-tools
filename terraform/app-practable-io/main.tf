@@ -613,3 +613,44 @@ resource "google_storage_bucket" "default" {
   #  google_project_iam_member.default
   #]
 }
+
+# ed0-alternate is for leap-frogging changes in the production server
+# ed0 and ed0-alternate will alternately be updated and made live
+data "google_compute_image" "ubuntu_image_ed0-alternate" {
+  name = "ubuntu-2404-noble-amd64-v20241219"
+  project = "ubuntu-os-cloud"
+}
+
+resource "google_compute_address" "static-ed0-alternate" {
+  name = "ipv4-address-ed0-alternate"
+  region = var.region
+}
+
+resource "google_compute_instance" "ed0-alternate_vm" {
+  name = "app-practable-io-alpha-ed0-alternate"
+  machine_type = "e2-standard-2"
+  zone = var.zone
+  tags = ["ed0-alternate"]
+  boot_disk {
+    initialize_params {
+      image = data.google_compute_image.ubuntu_image_ed0-alternate.self_link
+      size = 24
+    }
+  }
+
+  network_interface {
+    network = "default"
+    access_config {
+      nat_ip = google_compute_address.static-ed0-alternate.address
+    }
+  }
+
+  service_account {
+    # Google recommends custom service accounts with `cloud-platform` scope with
+    # specific permissions granted via IAM Roles.
+    # This approach lets you avoid embedding secret keys or user credentials
+    # in your instance, image, or app code
+    email  = "469911504726-compute@developer.gserviceaccount.com"
+    scopes = ["cloud-platform"]
+  }
+}
