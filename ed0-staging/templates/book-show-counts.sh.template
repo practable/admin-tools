@@ -1,0 +1,2 @@
+#!/bin/bash
+cat ./data/checked_exported_bookings_by_window.yaml | grep count -B1
