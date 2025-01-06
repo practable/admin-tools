@@ -54,9 +54,9 @@ PermissionsStartOnly=true
 ExecStartPre=/bin/mkdir -p /var/log/status
 ExecStartPre=/bin/chown syslog:adm /var/log/status
 ExecStartPre=/bin/chmod 755 /var/log/status
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=status
+StandardOutput=journal
+StandardError=journal
+
 
 [Install]
 WantedBy=multi-user.target

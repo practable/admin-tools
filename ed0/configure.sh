@@ -92,6 +92,10 @@ chmod +x ./login.sh
 envsubst '${BACKEND_SERVICE} ${PROJECT}' < ./templates/health.sh.template > ./health.sh
 chmod +x ./health.sh
 
+# Pre-install setup playbook (sets up ssh key for RL.Eng@ed.ac.uk machine user account on github)
+export PRIVATE_KEY=${SECRETS}/github/id_ed25519
+envsubst '${ANSIBLE_GROUP} ${PRIVATE_KEY}' < ./templates/playbook-pre-install-setup.yml.template > ./playbooks/pre-install-setup.yml
+
 # Create book.service by adding variables to template
 export BOOK_PORT=4000
 export BOOK_AUDIENCE="${HTTPS_HOST}/book"

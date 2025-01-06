@@ -23,10 +23,12 @@
      when: ansible_facts.services["jump.service"] is defined
 
    - git:
-       repo: https://github.com/practable/jump.git
+       repo: git@github.com:practable/jump.git
        dest: /var/lib/practable/sources/jump
        update: yes
        version: main
+       accept_hostkey: yes
+       key_file: /etc/practable/github.key
        
    - name: jump build
      command: ./build.sh

@@ -24,9 +24,8 @@ PermissionsStartOnly=true
 ExecStartPre=/bin/mkdir -p /var/log/book
 ExecStartPre=/bin/chown syslog:adm /var/log/book
 ExecStartPre=/bin/chmod 755 /var/log/book
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=book
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target

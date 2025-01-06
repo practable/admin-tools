@@ -23,10 +23,12 @@
      when: ansible_facts.services["book.service"] is defined
 
    - git:
-       repo: https://github.com/practable/book.git
+       repo: git@github.com:practable/book.git
        dest: /var/lib/practable/sources/book
        update: yes
        version: develop
+       accept_hostkey: yes
+       key_file: /etc/practable/github.key
        
    - name: book build
      command: ./build.sh

@@ -26,9 +26,8 @@ PermissionsStartOnly=true
 ExecStartPre=/bin/mkdir -p /var/log/relay
 ExecStartPre=/bin/chown syslog:adm /var/log/relay
 ExecStartPre=/bin/chmod 755 /var/log/relay
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=session
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
