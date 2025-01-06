@@ -613,4 +613,3 @@ resource "google_storage_bucket" "default" {
   #  google_project_iam_member.default
   #]
 }
-
