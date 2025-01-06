@@ -1,4 +1,17 @@
-# ed0 guidance
+# ed0-alternate guidance
+
+## installation
+
+run these playbooks:
+
+configure-kernel
+pre-install-setup
+install-book
+install-jump
+install-relay
+install-status
+install-webhook
+update-static-contents
 
 ## Logging in from campus
 
