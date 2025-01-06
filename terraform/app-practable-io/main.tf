@@ -207,6 +207,12 @@ resource "google_compute_instance" "ed0_vm" {
 }
 
 resource "google_compute_instance" "ed-log-dev_vm" {
+  labels = {
+    "goog-ops-agent-policy" = "v2-x86-template-1-3-0"
+  }
+  metadata = {
+    "enable-osconfig" = "TRUE"
+  }
   name         = "app-practable-io-alpha-ed-log-dev"
   machine_type = "e2-small"
   zone         = var.zone
