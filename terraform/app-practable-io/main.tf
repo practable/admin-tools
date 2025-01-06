@@ -301,7 +301,8 @@ resource "google_compute_instance_group" "ed0" {
   name        = "instance-group-ed0"
   description = "instance group for ed0 path"
 
-  instances =  ["${google_compute_instance.ed0_vm.self_link}"] 
+  #instances =  ["${google_compute_instance.ed0_vm.self_link}"] 
+  instances =  ["${google_compute_instance.ed0-alternate_vm.self_link}"]
 
   lifecycle {
     #create_before_destroy = true
