@@ -28,8 +28,8 @@ with open("./data/exported_bookings.json") as file:
 now = pytz.UTC.localize(datetime.datetime.now())
 soon = now + datetime.timedelta(minutes=10)
 
-on_now = {}
-on_soon = {}
+on_now = []
+on_soon = []
 soonest = now + datetime.timedelta(days=99)
 
 def is_now(start, end):
