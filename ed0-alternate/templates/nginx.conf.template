@@ -91,6 +91,11 @@ http {
             try_files $uri $uri/ $uri.html /static/ui/fridge-gunt-default-1.0/;
             index index.html;
         }
+        
+        location /$INSTANCE_PATH/static/ui/fridge-enthalpy-1.0/ {
+            try_files $uri $uri/ $uri.html /static/ui/fridge-enthalpy-1.0/;
+            index index.html;
+        }
 
         location /$INSTANCE_PATH/static/ui/governor-1.0/ {
             try_files $uri $uri/ $uri.html /static/ui/governor-1.0/;
@@ -144,6 +149,11 @@ http {
 
         location /$INSTANCE_PATH/static/ui/spinner-sim-1.0/ {
             try_files $uri $uri/ $uri.html /static/ui/spinner-sim-1.0/;
+            index index.html;
+        }
+        
+        location /$INSTANCE_PATH/static/ui/stc-default-1.0/ {
+            try_files $uri $uri/ $uri.html /static/ui/stc-default-1.0/;
             index index.html;
         }
 
