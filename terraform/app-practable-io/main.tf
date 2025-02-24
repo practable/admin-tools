@@ -214,7 +214,7 @@ resource "google_compute_instance" "ed-log-dev_vm" {
     "enable-osconfig" = "TRUE"
   }
   name         = "app-practable-io-alpha-ed-log-dev"
-  machine_type = "e2-medium"
+  machine_type = "e2-standard-2"
   zone         = var.zone
   allow_stopping_for_update = true
   tags = ["http-server"]
