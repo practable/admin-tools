@@ -69,7 +69,10 @@ http {
    }
 
     server {
-         listen 443;
+        listen 443 ssl;
+			
+		ssl_certificate /etc/letsencrypt/live/practable.io/fullchain.pem; # managed by Certbot
+    	ssl_certificate_key /etc/letsencrypt/live/practable.io/privkey.pem; # managed by Certbot
  
          server_name practable.io;
          root /var/www/practable.io;
