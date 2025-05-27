@@ -158,3 +158,65 @@ Then restart php
 ```
 sudo systemctl restart php8.1-fpm.service 
 ```
+
+## Moving from one domain to another on same server
+
+We want to move from practable.dev to practable.io
+
+This appears to need some care, see [this guide](https://developer.wordpress.org/advanced-administration/upgrade/migrating/#moving-directories-on-your-existing-server)
+
+Steps
+
+### Backup files & database
+
+## Create admin user for mariadb
+
+create mariabackup.pat in `credentials-uoe-soe/secret/web.practable.io/mariabackup.pat`
+
+log into instance, then log into mariadb with 'mysql -u root -p` (password is in secrets, see above)
+
+privileges needed for 10.6.22 are those for >10.5, as listed [here](https://mariadb.com/kb/en/mariabackup-overview/#:~:text=Authentication%20and%20Privileges,-Mariabackup%20needs%20to&text=For%20most%20use%20cases%2C%20the,%2D%2Dslave%2Dinfo%20is%20specified.)
+
+create user, using string from mariabackup.pat in place of mypassword
+```
+CREATE USER 'mariabackup'@'localhost' IDENTIFIED BY 'mypassword';
+GRANT SELECT, SHOW VIEW, RELOAD, PROCESS, LOCK TABLES, BINLOG MONITOR ON *.* TO 'mariabackup'@'localhost';
+```
+
+note we added SELECT, SHOW VIEW because it was needed for the dump all operation (SHOW VIEW, not just SHOW, as trying to add SHOW causes misleading syntax error about `ON *.*`, presumably because SHOW is a command)
+
+check user exists
+```
+MariaDB [(none)]> SELECT User, Host FROM mysql.user;
++-------------+-----------+
+| User        | Host      |
++-------------+-----------+
+| wordpress   | %         |
+| mariabackup | localhost |
+| mariadb.sys | localhost |
+| mysql       | localhost |
+| root        | localhost |
++-------------+-----------+
+5 rows in set (0.001 sec)
+```
+
+## Run the backup
+
+log into the instance, create `/home/tim/backup` if it does not exist
+
+```
+mariadb-dump -u mariabackup -p -x -A > /home/tim/backup/dbs.sql
+```
+
+Check backup exists - was 19MB on 27/5/25
+
+0. Create new A record for the server at practable.io
+
+(was ALIAS to practable.github.io)
+0. Update nginx to server new loction 
+0. Update lets encrypt certbot to work with new location
+0. follow steps in guide linked above
+
+
+
+
