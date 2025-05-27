@@ -53,20 +53,51 @@ http {
     		include fastcgi_params;
     		include snippets/fastcgi-php.conf;
     		fastcgi_buffers 1024 4k;
-   	 	fastcgi_buffer_size 128k;
-  	}
+   	 	    fastcgi_buffer_size 128k;
+  	    }
 
     }
   
     server {
-    if ($host = practable.dev) {
-        return 301 https://$host$request_uri;
-    } # managed by Certbot
+        if ($host = practable.dev) {
+            return 301 https://$host$request_uri;
+        } # managed by Certbot
 
         listen 80;
         server_name practable.dev;
         return 404; # managed by Certbot
    }
+
+    server {
+         listen 443;
+ 
+         server_name practable.io;
+         root /var/www/practable.io;
+                  
+         location / { 
+          try_files $uri $uri/ /index.php?$args;
+         }
+
+         location ~ \.php$ {
+    		fastcgi_pass unix:/run/php/php8.1-fpm.sock;
+    		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    		include fastcgi_params;
+    		include snippets/fastcgi-php.conf;
+    		fastcgi_buffers 1024 4k;
+   	 	    fastcgi_buffer_size 128k;
+  	    }
+
+    }
+  
+    server {
+        if ($host = practable.io) {
+            return 301 https://$host$request_uri;
+        } # managed by Certbot
+
+        listen 80;
+        server_name practable.io;
+        return 404; # managed by Certbot
+   }  
 
 }
 
