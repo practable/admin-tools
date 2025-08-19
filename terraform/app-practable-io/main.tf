@@ -402,13 +402,13 @@ module "gce-lb-http" {
   target_tags          = [var.network_name]
   firewall_networks = ["default"]
 
-# uncomment below when replacing ssl cert (it can't be in use)
-  #ssl                  = false
-  #use_ssl_certificates = false
 
-# uncomment below for normal operation with cert
   ssl                  = true
-  ssl_certificates     = [google_compute_ssl_certificate.certificate-1.self_link, google_compute_ssl_certificate.certificate-2.self_link]
+  # Add new certificate before removing old certificate (do terraform apply after adding new cert)
+  #ssl_certificates     = [google_compute_ssl_certificate.certificate-1.self_link, google_compute_ssl_certificate.certificate-2.self_link]
+  # this is the new certificate
+  ssl_certificates     = [google_compute_ssl_certificate.certificate-2.self_link]
+
   use_ssl_certificates = true
   https_redirect       = true
 
