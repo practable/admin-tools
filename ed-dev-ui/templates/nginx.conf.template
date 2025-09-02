@@ -78,6 +78,21 @@ http {
 	      try_files $uri $uri/ $uri.html /$INSTANCE_PATH/david/ui/pvna-twoport-graphical-1.0/index.html;
         }
         
+        location /$INSTANCE_PATH/david/ui/truss-default-2.0/ {
+	  	  add_header Access-Control-Allow-Origin *;
+	      try_files $uri $uri/ $uri.html /$INSTANCE_PATH/david/ui/truss-default-2.0/index.html;
+        }
+        
+        location /$INSTANCE_PATH/david/ui/truss-no-force-2.0/ {
+	  	  add_header Access-Control-Allow-Origin *;
+	      try_files $uri $uri/ $uri.html /$INSTANCE_PATH/david/ui/truss-no-force-2.0/index.html;
+        }
+        
+        location /$INSTANCE_PATH/david/ui/truss-open-day-2.0/ {
+	  	  add_header Access-Control-Allow-Origin *;
+	      try_files $uri $uri/ $uri.html /$INSTANCE_PATH/david/ui/truss-open-day-2.0/index.html;
+        }
+        
         location /$INSTANCE_PATH/sijie/ui/fridge-gunt-default-1.0/ {
 	  	  add_header Access-Control-Allow-Origin *;
 	      try_files $uri $uri/ $uri.html /$INSTANCE_PATH/sijie/ui/fridge-gunt-default-1.0/index.html;
