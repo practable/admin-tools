@@ -97,6 +97,11 @@ http {
             index index.html;
         }
         
+        location /$INSTANCE_PATH/static/ui/fridge-cel3-1.0/ {
+            try_files $uri $uri/ $uri.html /static/ui/fridge-cel3-1.0/;
+            index index.html;
+        }
+        
         location /$INSTANCE_PATH/static/ui/fridge-enthalpy-1.0/ {
             try_files $uri $uri/ $uri.html /static/ui/fridge-enthalpy-1.0/;
             index index.html;
