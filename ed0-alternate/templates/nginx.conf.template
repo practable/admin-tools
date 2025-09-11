@@ -116,6 +116,16 @@ http {
             try_files $uri $uri/ $uri.html /static/ui/penduino-1.0/;
             index index.html;
         }
+        
+        location /$INSTANCE_PATH/static/ui/penduino-default-2.0/ {
+            try_files $uri $uri/ $uri.html /static/ui/penduino-default-2.0/;
+            index index.html;
+        }
+        
+        location /$INSTANCE_PATH/static/ui/penduino-analytics-2.0/ {
+            try_files $uri $uri/ $uri.html /static/ui/penduino-analytics-2.0/;
+            index index.html;
+        }
 
         location /$INSTANCE_PATH/static/ui/pvna-1.0/ {
             try_files $uri $uri/ $uri.html /static/ui/pvna-1.0/;
@@ -162,6 +172,16 @@ http {
             index index.html;
         }
         
+        location /$INSTANCE_PATH/static/ui/spinner-default-3.0/ {
+            try_files $uri $uri/ $uri.html /static/ui/spinner-default-3.0/;
+            index index.html;
+        }
+        
+        location /$INSTANCE_PATH/static/ui/spinner-analytics-3.0/ {
+            try_files $uri $uri/ $uri.html /static/ui/spinner-analytics-3.0/;
+            index index.html;
+        }
+        
         location /$INSTANCE_PATH/static/ui/stc-default-1.0/ {
             try_files $uri $uri/ $uri.html /static/ui/stc-default-1.0/;
             index index.html;
@@ -179,6 +199,21 @@ http {
 		
         location /$INSTANCE_PATH/static/ui/truss-openday-1.0/ {
             try_files $uri $uri/ $uri.html /static/ui/truss-openday-1.0/;
+            index index.html;
+        }
+        
+        location /$INSTANCE_PATH/static/ui/truss-default-2.0/ {
+            try_files $uri $uri/ $uri.html /static/ui/truss-default-2.0/;
+            index index.html;
+        }
+        
+        location /$INSTANCE_PATH/static/ui/truss-no-force-2.0/ {
+            try_files $uri $uri/ $uri.html /static/ui/truss-no-force-2.0/;
+            index index.html;
+        }
+        
+        location /$INSTANCE_PATH/static/ui/truss-open-day-2.0/ {
+            try_files $uri $uri/ $uri.html /static/ui/truss-open-day-2.0/;
             index index.html;
         }
 		
