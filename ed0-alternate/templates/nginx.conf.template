@@ -87,6 +87,16 @@ http {
             index index.html;
         }
         
+        location /$INSTANCE_PATH/static/ui/dynamics-default-1.0/ {
+            try_files $uri $uri/ $uri.html /static/ui/dynamics-default-1.0/;
+            index index.html;
+        }
+        
+        location /$INSTANCE_PATH/static/ui/dynamics-analytics-1.0/ {
+            try_files $uri $uri/ $uri.html /static/ui/dynamics-analytics-1.0/;
+            index index.html;
+        }
+        
         location /$INSTANCE_PATH/static/ui/fridge-gunt-default-1.0/ {
             try_files $uri $uri/ $uri.html /static/ui/fridge-gunt-default-1.0/;
             index index.html;
