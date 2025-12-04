@@ -698,8 +698,9 @@ resource "google_compute_instance" "ed0-alternate_vm" {
     "enable-osconfig" = "TRUE"
   }
   name = "app-practable-io-alpha-ed0-alternate"
-  machine_type = "e2-standard-2"
+  machine_type = "e2-standard-4"
   zone = var.zone
+  allow_stopping_for_update = true
   tags = ["http-server"]
   boot_disk {
     initialize_params {

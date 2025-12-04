@@ -13,7 +13,15 @@ run `terraform plan` - should see that config matches state
 
 ### Updating an instance size in place
 
+
+Remember to check for future bookings beforehand, so you can re-upload those as well.
+
 This took around 2m30s when upgrading `ed0` from `e2-highcpu-2` to `e2-standard-2`
+
+4/12/25 - updated ed0 from `e2-standard-2` to `e2-small`, in-place, as no longer in use but wanted as a reference (if needed). The in-place change took 2m50s. Additional time required afterwards for instance to restart, ca 2mins (not measured, just an estimate).
+
+Also updated ed0-alternate from `e2-standard-2` to `e2-standard-4` which took 2m50. Server comes back up on its own. Manifest needs reloading.
+
 
 ## Background
 
