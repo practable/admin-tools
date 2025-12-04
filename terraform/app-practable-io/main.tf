@@ -181,7 +181,7 @@ resource "google_compute_instance" "ed-dev-ui_vm" {
 
 resource "google_compute_instance" "ed0_vm" {
   name         = "app-practable-io-alpha-ed0"
-  machine_type = "e2-standard-2"
+  machine_type = "e2-small"
   zone         = var.zone
   allow_stopping_for_update = true
   tags = ["http-server"]
