@@ -138,13 +138,13 @@ resource "google_compute_instance" "ed0_vm" {
 
 
 resource "google_compute_instance" "default_vm" {
-  name         = "app-practable-io-alpha-default"
+  name         = "test-practable-io-alpha-default"
   machine_type = "e2-micro"
   zone         = var.zone
   allow_stopping_for_update = true
   tags = ["http-server"]
   lifecycle {
-    create_before_destroy = true
+    #create_before_destroy = true
   }
 
   boot_disk {
