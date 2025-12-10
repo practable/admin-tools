@@ -1,0 +1,12 @@
+plugin: gcp_compute
+projects:
+  - test-practable-io-alpha
+auth_kind: serviceaccount
+service_account_file: /home/tim/secret/test.practable.io/test-practable-io-alpha-5061ab17b7d1.json
+keyed_groups:
+  - key: labels
+  - prefix: label
+groups:
+  test_practable_ed0: "'test-practable-io-alpha-ed0' in name"
+
+  
