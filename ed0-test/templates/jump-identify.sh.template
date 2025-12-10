@@ -1,0 +1,9 @@
+#/bin/bash
+# purpose: list experiments connected
+# usage: ./identify.sh <stub>
+# example: ./identify.sh spin
+if [ $# -eq 0 ]; then
+    >&2 echo "must provide a topic stub, e.g. ./identify.sh spin"
+    exit 1
+fi
+./get-stats.sh | grep topic | grep $1 | grep -v '/' | sort

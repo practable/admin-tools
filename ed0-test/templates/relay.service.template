@@ -1,0 +1,34 @@
+[Unit]
+Description=github.com/practable/relay relay
+After=network.target
+
+[Service]
+LimitNOFILE=99999
+Environment=RELAY_ALLOW_NO_BOOKING_ID=$RELAY_ALLOW_NO_BOOKING_ID
+Environment=RELAY_AUDIENCE=$RELAY_AUDIENCE
+Environment=RELAY_BUFFER_SIZE=256
+Environment=RELAY_LOG_LEVEL=info
+Environment=RELAY_LOG_FORMAT=json
+Environment=RELAY_LOG_FILE=/var/log/relay/relay.log
+Environment=RELAY_PORT_ACCESS=$RELAY_PORT_ACCESS
+Environment=RELAY_PORT_PROFILE=$RELAY_PORT_PROFILE
+Environment=RELAY_PORT_RELAY=$RELAY_PORT_RELAY
+Environment=RELAY_PROFILE=false
+Environment=RELAY_SECRET=$RELAY_SECRET
+Environment=RELAY_STATS_EVERY=1m
+Environment=RELAY_TIDY_EVERY=5m
+Environment=RELAY_URL=$RELAY_URL
+Type=simple
+Restart=always
+ExecStart=/usr/local/bin/relay serve
+
+PermissionsStartOnly=true
+ExecStartPre=/bin/mkdir -p /var/log/relay
+ExecStartPre=/bin/chown syslog:adm /var/log/relay
+ExecStartPre=/bin/chmod 755 /var/log/relay
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+

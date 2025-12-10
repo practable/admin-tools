@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Usage ./login <expt_id>
+# Example ./login pend00
+export EXPT=$1
+
+# use the port specified in the inventory file to avoid having to edit known_hosts
+port=$(${EXPT_SECRETS}/el $EXPT)
+
+export JUMP_TOKEN_AUDIENCE=${HTTPS_HOST}/jump
+export JUMP_TOKEN_CONNECTION_TYPE=connect
+export JUMP_TOKEN_LIFETIME=86400
+export JUMP_TOKEN_ROLE=client
+export JUMP_TOKEN_SECRET=$(<${SECRETS}/jump.pat)
+export JUMP_TOKEN_TOPIC=$EXPT
+
+export JUMP_BASE_PATH=/api/v1 
+export JUMP_CLIENT_LOCAL_PORT="${port}"
+export JUMP_CLIENT_RELAY_SESSION="${JUMP_TOKEN_AUDIENCE}${JUMP_BASE_PATH}/${JUMP_TOKEN_CONNECTION_TYPE}/${JUMP_TOKEN_TOPIC}"
+export JUMP_CLIENT_TOKEN=$(../bin/jump token)
+export JUMP_CLIENT_LOG_LEVEL=error
+export JUMP_CLIENT_LOG_FILE=stdout
+export JUMP_CLIENT_LOG_FORMAT=text
+../bin/jump client >/dev/null 2>&1 &
+pid=$!
+user=$(${EXPT_SECRETS}/eu $EXPT)
+private_key=${EXPT_SECRETS}/expt_rsa 
+#https://superuser.com/questions/772660/howto-force-ssh-to-use-a-specific-private-key
+ssh -F /dev/null -o IdentitiesOnly=yes -i "$private_key"  -p "$port" "${user}@localhost"
+kill $!
+
+
+
