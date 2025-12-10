@@ -39,3 +39,8 @@ We need storage for our terraform bucket
 ```
 gcloud services enable storage.googleapis.com
 ```
+
+enable compute & IAM APIs
+
+add Service Account User role to individual's account in IAM section of the project
+
