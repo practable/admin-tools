@@ -1,0 +1,13 @@
+[Unit]
+Description=webhook for pulling github repos that we are serving
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/usr/bin/webhook -hooks /etc/webhook.conf -logfile /var/log/webhook.log
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

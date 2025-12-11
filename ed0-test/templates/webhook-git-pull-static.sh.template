@@ -1,0 +1,17 @@
+#!/bin/bash
+# assumes repo has already been pulled at least once
+cd /var/www/git/${STATIC_REPO_NAME}
+git pull
+
+#make symbolic links for index file for whole domain (only need to do this for one repo)
+ln -fs /var/www/git/${STATIC_REPO_NAME}/index.html /var/www/${DOMAIN}/${INSTANCE_PATH}/index.html
+
+#make symbolic link for index file
+ln -fs /var/www/git/${STATIC_REPO_NAME}/index.html /var/www/${DOMAIN}/${INSTANCE_PATH}/static/index.html
+
+# make symbolic links for sub-dirs
+ln -fs /var/www/git/${STATIC_REPO_NAME}/config /var/www/${DOMAIN}/${INSTANCE_PATH}/static/config
+ln -fs /var/www/git/${STATIC_REPO_NAME}/images /var/www/${DOMAIN}/${INSTANCE_PATH}/static/images
+ln -fs /var/www/git/${STATIC_REPO_NAME}/info /var/www/${DOMAIN}/${INSTANCE_PATH}/static/info
+ln -fs /var/www/git/${STATIC_REPO_NAME}/ui /var/www/${DOMAIN}/${INSTANCE_PATH}/static/ui
+

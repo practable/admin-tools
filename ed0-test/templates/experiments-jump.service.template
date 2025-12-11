@@ -1,0 +1,20 @@
+[Unit]
+Description=github.com/practable/jump host
+After=network.target
+
+[Service]
+LimitNOFILE=99999
+EnvironmentFile=/etc/practable/jump.env
+PermissionsStartOnly=true
+ExecStartPre=/bin/mkdir -p /var/log/jump
+ExecStartPre=/bin/chmod 755 /var/log/jump
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=jump
+
+Type=simple
+Restart=always
+ExecStart=/usr/local/bin/jump host
+
+[Install]
+WantedBy=multi-user.target
