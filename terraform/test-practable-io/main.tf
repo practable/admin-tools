@@ -345,7 +345,7 @@ resource "google_compute_url_map" "urlmap" {
   default_service = module.gce-lb-http.backend_services["default"].self_link
 
   host_rule {
-    hosts        = ["app.practable.io"]
+    hosts        = ["test.practable.io"]
     path_matcher = "allpaths"
   }
 
