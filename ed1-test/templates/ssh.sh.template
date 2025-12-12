@@ -1,0 +1,2 @@
+#/bin/bash
+gcloud compute scp --zone "${ZONE}" --project "${PROJECT}" $1 ${INSTANCE}:~

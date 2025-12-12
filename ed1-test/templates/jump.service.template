@@ -1,0 +1,33 @@
+[Unit]
+Description=github.com/practable/jump relay
+After=network.target
+
+[Service]
+LimitNOFILE=99999
+Environment=JUMP_RELAY_ACCESS_BASE_PATH=/api/v1
+Environment=JUMP_RELAY_AUDIENCE=$JUMP_AUDIENCE
+Environment=JUMP_RELAY_BUFFER_SIZE=128
+Environment=JUMP_RELAY_LOG_LEVEL=info
+Environment=JUMP_RELAY_LOG_FORMAT=json
+Environment=JUMP_RELAY_LOG_FILE=/var/log/jump/jump.log
+Environment=JUMP_RELAY_PORT_ACCESS=$JUMP_PORT_ACCESS
+Environment=JUMP_RELAY_PORT_RELAY=$JUMP_PORT_RELAY
+Environment=JUMP_RELAY_PROFILE=false
+Environment=JUMP_RELAY_SECRET=$JUMP_SECRET
+Environment=JUMP_RELAY_STATS_EVERY=1m
+Environment=JUMP_RELAY_URL=$JUMP_URL
+
+Type=simple
+Restart=always
+ExecStart=/usr/local/bin/jump relay
+
+PermissionsStartOnly=true
+ExecStartPre=/bin/mkdir -p /var/log/jump
+ExecStartPre=/bin/chown syslog:adm /var/log/jump
+ExecStartPre=/bin/chmod 755 /var/log/jump
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+

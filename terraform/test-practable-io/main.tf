@@ -16,27 +16,27 @@
 
 provider "google" {
   project = var.project
-  region = var.region
+  region  = var.region
 
 }
 
 provider "google-beta" {
   project = var.project
-  region = var.region
+  region  = var.region
 }
 
 # add new certificate before removing old certificate
 # (previous approach) comment out to update cert (also modify load balancer to not use ssl, temporarily)
 
 resource "google_compute_ssl_certificate" "certificate-2" {
-  name        = "${var.network_name}-cert-2"
+  name = "${var.network_name}-cert-2"
   # create symlinks in project dir to actual key & cert
   private_key = file("${path.module}/ssl-cert-2025-08.key")
   certificate = file("${path.module}/ssl-cert-2025-08.pem")
 }
 
 resource "google_compute_router" "default" {
-  name    = "lb-https-redirect-router"
+  name = "lb-https-redirect-router"
   #network = google_compute_network.default.self_link
   network = "default"
   region  = var.region
@@ -60,17 +60,17 @@ data "template_file" "group-startup-script" {
 }
 
 resource "google_compute_firewall" "default" {
- name    = "web-firewall"
- network = "default"
+  name    = "web-firewall"
+  network = "default"
 
 
- allow {
-   protocol = "tcp"
-   ports    = ["80"]
- }
+  allow {
+    protocol = "tcp"
+    ports    = ["80"]
+  }
 
- source_ranges = ["0.0.0.0/0"]
- target_tags = ["http-server"]
+  source_ranges = ["0.0.0.0/0"]
+  target_tags   = ["http-server"]
 }
 
 data "google_compute_image" "ubuntu_image" {
@@ -80,33 +80,42 @@ data "google_compute_image" "ubuntu_image" {
 }
 
 data "google_compute_image" "ubuntu_image_ed0" {
-  name = "ubuntu-2004-focal-v20230918"
+  name    = "ubuntu-2004-focal-v20230918"
   project = "ubuntu-os-cloud"
 }
 
+data "google_compute_image" "ubuntu_image_ed1" {
+  name    = "ubuntu-2004-focal-v20230918"
+  project = "ubuntu-os-cloud"
+}
 
 data "google_compute_image" "ubuntu_image_default" {
-  name = "ubuntu-2004-focal-v20230918"
+  name    = "ubuntu-2004-focal-v20230918"
   project = "ubuntu-os-cloud"
 }
 
 resource "google_compute_address" "static-ed0" {
-  name = "ipv4-address-ed0"
+  name   = "ipv4-address-ed0"
+  region = var.region
+}
+
+resource "google_compute_address" "static-ed1" {
+  name   = "ipv4-address-ed1"
   region = var.region
 }
 
 resource "google_compute_address" "static-default" {
-  name = "ipv4-address-default"
+  name   = "ipv4-address-default"
   region = var.region
 }
 
 
 resource "google_compute_instance" "ed0_vm" {
-  name         = "test-practable-io-alpha-ed0"
-  machine_type = "e2-small"
-  zone         = var.zone
+  name                      = "test-practable-io-alpha-ed0"
+  machine_type              = "e2-small"
+  zone                      = var.zone
   allow_stopping_for_update = true
-  tags = ["http-server"]
+  tags                      = ["http-server"]
   lifecycle {
     #create_before_destroy = true
   }
@@ -114,7 +123,7 @@ resource "google_compute_instance" "ed0_vm" {
   boot_disk {
     initialize_params {
       image = data.google_compute_image.ubuntu_image_ed0.self_link
-	  size = 24
+      size  = 24
     }
   }
 
@@ -136,13 +145,47 @@ resource "google_compute_instance" "ed0_vm" {
 
 }
 
+resource "google_compute_instance" "ed1_vm" {
+  name                      = "test-practable-io-alpha-ed1"
+  machine_type              = "e2-micro"
+  zone                      = var.zone
+  allow_stopping_for_update = true
+  tags                      = ["http-server"]
+  lifecycle {
+    #create_before_destroy = true
+  }
+
+  boot_disk {
+    initialize_params {
+      image = data.google_compute_image.ubuntu_image_ed1.self_link
+      size  = 24
+    }
+  }
+
+  network_interface {
+    network = "default"
+    access_config {
+      nat_ip = google_compute_address.static-ed1.address
+    }
+  }
+
+  service_account {
+    # Google recommends custom service accounts with `cloud-platform` scope with
+    # specific permissions granted via IAM Roles.
+    # This approach lets you avoid embedding secret keys or user credentials
+    # in your instance, image, or app code
+    email  = "954830769210-compute@developer.gserviceaccount.com"
+    scopes = ["cloud-platform"]
+  }
+
+}
 
 resource "google_compute_instance" "default_vm" {
-  name         = "test-practable-io-alpha-default"
-  machine_type = "e2-micro"
-  zone         = var.zone
+  name                      = "test-practable-io-alpha-default"
+  machine_type              = "e2-micro"
+  zone                      = var.zone
   allow_stopping_for_update = true
-  tags = ["http-server"]
+  tags                      = ["http-server"]
   lifecycle {
     #create_before_destroy = true
   }
@@ -159,7 +202,7 @@ resource "google_compute_instance" "default_vm" {
       nat_ip = google_compute_address.static-default.address
     }
   }
-  
+
   service_account {
     # Google recommends custom service accounts with `cloud-platform` scope with
     # specific permissions granted via IAM Roles.
@@ -175,8 +218,8 @@ resource "google_compute_instance_group" "ed0" {
   name        = "instance-group-ed0"
   description = "instance group for ed0 path"
 
-  instances =  ["${google_compute_instance.ed0_vm.self_link}"] 
-  
+  instances = ["${google_compute_instance.ed0_vm.self_link}"]
+
 
   lifecycle {
     #create_before_destroy = true
@@ -195,7 +238,7 @@ resource "google_compute_instance_group" "default" {
   name        = "instance-group-default"
   description = "instance group for default path"
 
-  instances =  ["${google_compute_instance.default_vm.self_link}"] 
+  instances = ["${google_compute_instance.default_vm.self_link}"]
 
   lifecycle {
     #create_before_destroy = true
@@ -211,26 +254,26 @@ resource "google_compute_instance_group" "default" {
 
 
 module "gce-lb-http" {
-  source               = "GoogleCloudPlatform/lb-http/google"
+  source            = "GoogleCloudPlatform/lb-http/google"
   version           = "~> 9.0"
-  name                 = "ci-https-redirect"
-  project              = var.project
-  target_tags          = [var.network_name]
+  name              = "ci-https-redirect"
+  project           = var.project
+  target_tags       = [var.network_name]
   firewall_networks = ["default"]
 
 
-  ssl                  = true
+  ssl = true
   # Add new certificate before removing old certificate (do terraform apply after adding new cert)
   #ssl_certificates     = [google_compute_ssl_certificate.certificate-1.self_link, google_compute_ssl_certificate.certificate-2.self_link]
   # this is the new certificate
-  ssl_certificates     = [google_compute_ssl_certificate.certificate-2.self_link]
+  ssl_certificates = [google_compute_ssl_certificate.certificate-2.self_link]
 
   use_ssl_certificates = true
   https_redirect       = true
 
   # see https://cloud.google.com/load-balancing/docs/https/ext-http-lb-tf-module-examples
-  url_map           = google_compute_url_map.urlmap.self_link
-  create_url_map    = false
+  url_map        = google_compute_url_map.urlmap.self_link
+  create_url_map = false
 
   backends = {
     default = {
@@ -258,23 +301,23 @@ module "gce-lb-http" {
         enable = false
       }
     }
-	
+
     ed0 = {
-      protocol    = "HTTP"
-	  load_balancing_scheme = "EXTERNAL"
-      port        = 80
-      port_name   = "http"
-	  # this sets the maximum websocket connection time to 1 year
-	  # keepalives do not extend this (it seems)
+      protocol              = "HTTP"
+      load_balancing_scheme = "EXTERNAL"
+      port                  = 80
+      port_name             = "http"
+      # this sets the maximum websocket connection time to 1 year
+      # keepalives do not extend this (it seems)
       timeout_sec = 31536000
       enable_cdn  = false
 
       health_check = {
-	    check_interval_sec = 2
-		timeout_sec = 1
-        request_path = "/ed0/"
-        port         = 80
-		logging = true
+        check_interval_sec = 2
+        timeout_sec        = 1
+        request_path       = "/ed0/"
+        port               = 80
+        logging            = true
       }
 
       log_config = {
@@ -291,7 +334,7 @@ module "gce-lb-http" {
       }
     }
   }
- 
+
 }
 
 
@@ -299,7 +342,7 @@ resource "google_compute_url_map" "urlmap" {
   name        = "urlmap"
   description = "a description"
 
-  default_service =  module.gce-lb-http.backend_services["default"].self_link
+  default_service = module.gce-lb-http.backend_services["default"].self_link
 
   host_rule {
     hosts        = ["app.practable.io"]
@@ -307,10 +350,10 @@ resource "google_compute_url_map" "urlmap" {
   }
 
   path_matcher {
-    name = "allpaths"
+    name            = "allpaths"
     default_service = module.gce-lb-http.backend_services["default"].self_link
-	
-	
+
+
     path_rule {
       paths = [
         "/ed0",
@@ -318,7 +361,7 @@ resource "google_compute_url_map" "urlmap" {
       ]
       service = module.gce-lb-http.backend_services["ed0"].self_link
     }
-    
+
   }
 }
 

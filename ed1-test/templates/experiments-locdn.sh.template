@@ -1,0 +1,16 @@
+#!/bin/bash
+# example usage: locdn.sh jcmb2417
+location=$1
+inventory=${EXPT_SECRETS}/inventory.yaml
+
+read -r -p "Do you want to shut down all experiments in $location? [y/N] " response
+
+case "$response" in
+    [yY][eE][sS]|[yY]) 
+        ./jump-playbook $inventory shutdown.yml $location
+        ;;
+    *)
+        exit
+        ;;
+esac
+

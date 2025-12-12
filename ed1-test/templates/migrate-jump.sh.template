@@ -1,0 +1,26 @@
+#!/bin/bash
+# to use this file: wget $MIGRATE_FILES/jump.sh -O jump.sh; chmod +x jump.sh && sudo ./jump.sh
+systemctl stop jump.service
+mkdir -p ~/sources || true #ignore errors
+cd ~/sources
+rm -rf jump
+wget https://golang.org/dl/${EXPERIMENT_LINUX}
+rm -rf /usr/local/go && tar -C /usr/local -xzf ${EXPERIMENT_LINUX}
+echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile
+source /etc/profile
+git clone https://github.com/practable/jump.git
+cd jump/scripts/build
+./build.sh
+cd ../../cmd/jump
+cp jump /usr/local/bin
+cd ../../../
+wget $MIGRATE_FILES/getid.sh -O getid.sh
+chmod +x ./getid.sh
+./getid.sh
+export PRACTABLE_ID=$(./getid.sh)
+cd /etc/practable
+wget $MIGRATE_FILES/jump.env.$PRACTABLE_ID -O jump.env
+cd /etc/systemd/system
+wget $MIGRATE_FILES/jump.service -O jump.service
+systemctl enable jump.service
+systemctl start jump.service

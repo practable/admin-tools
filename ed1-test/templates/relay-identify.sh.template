@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Make token
+export RELAY_TOKEN_LIFETIME=30
+export RELAY_TOKEN_SCOPE_READ=true
+export RELAY_TOKEN_SCOPE_WRITE=false
+export RELAY_TOKEN_SECRET=$(<${SECRETS}/relay.pat)
+export RELAY_TOKEN_TOPIC=stats
+export RELAY_TOKEN_AUDIENCE="${HTTPS_HOST}/access"
+export client_token=$(../bin/relay token)
+
+# Request Access
+export ACCESS_URL="${RELAY_TOKEN_AUDIENCE}/session/stats"
+
+export RESP=$(curl -s -X POST \
+-H "Authorization: ${client_token}" \
+				   $ACCESS_URL)
+export STATS_URL=$(echo $RESP	| jq -r '.uri')
+#stats=$(echo '{"cmd":"update"}' | websocat -B 1048576 -n1 "$STATS_URL" | jq .)
+#echo $stats
+
+
+# relay on the topic being ca. 14th line after the experiment scope - brittle
+# TODO implement with jq select
+echo '{"cmd":"update"}' | websocat -B 1048576 -n1 "$STATS_URL" | jq . | grep expt -A17 | grep topic | sort | grep $1
+
