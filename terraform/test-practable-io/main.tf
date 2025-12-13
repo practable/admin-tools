@@ -112,7 +112,7 @@ resource "google_compute_address" "static-default" {
 
 resource "google_compute_instance" "ed0_vm" {
   name                      = "test-practable-io-alpha-ed0"
-  machine_type              = "e2-small"
+  machine_type              = "e2-standard-4"
   zone                      = var.zone
   allow_stopping_for_update = true
   tags                      = ["http-server"]
@@ -147,7 +147,7 @@ resource "google_compute_instance" "ed0_vm" {
 
 resource "google_compute_instance" "ed1_vm" {
   name                      = "test-practable-io-alpha-ed1"
-  machine_type              = "e2-micro"
+  machine_type              = "e2-standard-4"
   zone                      = var.zone
   allow_stopping_for_update = true
   tags                      = ["http-server"]
