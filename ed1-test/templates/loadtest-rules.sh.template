@@ -1,0 +1,11 @@
+#!/bin/bash
+# example usage ./loadtest.sh 199 #will run 0-199 feeds
+for i in $(seq 0 $1)
+do
+    num=$(printf "%03d" $i)
+	name="expt${num}"
+	videoAccess=$(cat video.access.$name)
+    videoToken=$(cat video.token.$name)
+    curl -X POST -H "Content-Type: application/json" -d '{"stream":"video","destination":"'"${videoAccess}"'","id":"'"${num}"'","token":"'"${videoToken}"'"}' http://localhost:8888/api/destinations
+done
+
