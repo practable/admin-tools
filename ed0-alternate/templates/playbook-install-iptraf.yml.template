@@ -1,0 +1,13 @@
+---
+- name: install iptraf-ng for manual traffic monitoring
+  hosts: ${ANSIBLE_GROUP}
+  become: yes
+  gather_facts: no
+
+  tasks:
+      
+    - name: Install iptraf-ng
+      apt: name=iptraf-ng state=latest
+
+ 
+     

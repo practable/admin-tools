@@ -145,6 +145,7 @@ export SSL_DOMAIN="${DOMAIN}/${INSTANCE_PATH}"
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-download-logs.yml.template > ./playbooks/download-logs.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-configure-kernel.yml.template > ./playbooks/configure-kernel.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-install-book.yml.template > ./playbooks/install-book.yml
+envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-install-iptraf.yml.template > ./playbooks/install-iptraf.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-install-jump.yml.template > ./playbooks/install-jump.yml
 envsubst '${ANSIBLE_GROUP} ${SSL_DOMAIN} ${EMAIL}' < ./templates/playbook-install-nginx.yml.template > ./playbooks/install-nginx.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-install-relay.yml.template > ./playbooks/install-relay.yml
