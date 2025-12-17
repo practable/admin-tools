@@ -1,0 +1,19 @@
+#!/bin/bash
+# Make token
+export BOOK_CLIENT_TOKEN_TTL=30s
+export BOOK_CLIENT_TOKEN_ADMIN=true
+export BOOK_CLIENT_TOKEN_SCOPE_WRITE=false
+export BOOK_CLIENT_TOKEN_SCOPE_OTHER=book:admin
+export BOOK_CLIENT_SECRET=$(<${SECRETS}/book.pat)
+export BOOK_CLIENT_TOKEN_AUD="${HTTPS_HOST}/book" 
+export BOOK_CLIENT_TOKEN_SUB=admin
+export client_token=$(../bin/book token)
+echo $client_token | decode-jwt
+
+# Get status from API (faster than the websocket method, which sometimes has a long delay)
+export URL="${BOOK_CLIENT_TOKEN_AUD}/api/v1/admin/resources"
+
+export RESP=$(curl -s -X GET \
+-H "Authorization: ${client_token}" \
+				   $URL)
+echo $RESP | jq .

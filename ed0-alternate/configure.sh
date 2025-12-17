@@ -177,6 +177,9 @@ envsubst '${DOMAIN}  ${INSTANCE_PATH} ${STATIC_REPO_NAME} ${STATIC_REPO_URL} ${D
 envsubst '${BOOK_AUDIENCE} ${BOOK_SECRET} ${DOMAIN}  ${INSTANCE_PATH}' < ./templates/book-admin.template > ./book/admin.sh
 chmod +x ./book/admin.sh
 
+envsubst '${HTTPS_HOST} ${SECRETS}' < ./templates/book-get-resources.sh.template > ./book/get-resources.sh
+chmod +x ./book/get-resources.sh
+
 envsubst '${BOOK_AUDIENCE}' < ./templates/book-generate-bookings.sh.template > ./book/generate-bookings.sh
 chmod +x ./book/generate-bookings.sh
 
