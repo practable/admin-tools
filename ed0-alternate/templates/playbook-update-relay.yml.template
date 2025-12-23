@@ -11,9 +11,15 @@
    - name: get service facts
      service_facts:
 
-   - name: stop relay if installed
+   - name: stop relay serve if installed
      service:
        name: relay
+       state: stopped
+     when: ansible_facts.services["relay.service"] is defined
+
+   - name: stop relay monitor if installed
+     service:
+       name: monitor
        state: stopped
      when: ansible_facts.services["relay.service"] is defined
 
@@ -45,6 +51,12 @@
        name: relay
        state: started
        enabled: true
+
+   - name: start monitor 
+     service:
+       name: monitor
+       state: started
+       enabled: true      
        
    - name: get service facts
      service_facts:
@@ -53,7 +65,12 @@
      fail:
        msg: "relay service is not installed"
      when: ansible_facts.services["relay.service"] is not defined
-     
+   
+   - name: check monitorservice installed
+     fail:
+       msg: "monitor service is not installed"
+     when: ansible_facts.services["monitor.service"] is not defined    
+
   handlers:
         
     - name: reload nginx

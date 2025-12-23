@@ -1,0 +1,15 @@
+#!/bin/bash
+export RELAY_MONITOR_AUDIENCE="${HTTPS_HOST}/access"
+export RELAY_MONITOR_SECRET=$(<${SECRETS}/relay.pat)
+export RELAY_MONITOR_LOG_LEVEL=info
+export RELAY_MONITOR_LOG_FORMAT=json
+export RELAY_MONITOR_LOG_FILE=/var/log/relay/monitor.log
+export RELAY_MONITOR_THRESHOLD=100ms
+export RELAY_MONITOR_INTERVAL=1s
+export RELAY_MONITOR_NO_RETRIGGER_WITHIN=1m
+export RELAY_MONITOR_TRIGGER_AFTER_MISSES=10
+export RELAY_MONITOR_TOPIC=canary-st-data
+export RELAY_MONITOR_COMMAND=kill -9 $(pgrep -f "relay serve")
+relay monitor 
+
+
