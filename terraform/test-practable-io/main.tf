@@ -118,6 +118,7 @@ resource "google_compute_instance" "ed0_vm" {
   tags                      = ["http-server"]
   lifecycle {
     #create_before_destroy = true
+    prevent_destroy = true
   }
 
   boot_disk {
@@ -153,6 +154,7 @@ resource "google_compute_instance" "ed1_vm" {
   tags                      = ["http-server"]
   lifecycle {
     #create_before_destroy = true
+    prevent_destroy = true
   }
 
   boot_disk {
