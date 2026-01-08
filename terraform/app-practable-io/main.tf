@@ -414,7 +414,7 @@ module "gce-lb-http" {
   # Add new certificate before removing old certificate (do terraform apply after adding new cert)
   #ssl_certificates     = [google_compute_ssl_certificate.certificate-1.self_link, google_compute_ssl_certificate.certificate-2.self_link]
   # this is the new certificate
-  ssl_certificates = [google_compute_ssl_certificate.certificate-2.self_link]
+  ssl_certificates = [google_compute_ssl_certificate.certificate-2.self_link, google_compute_ssl_certificate.certificate-3.self_link]
 
   use_ssl_certificates = true
   https_redirect       = true
