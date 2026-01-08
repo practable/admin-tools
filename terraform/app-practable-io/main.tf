@@ -26,14 +26,13 @@ provider "google-beta" {
 }
 
 # add new certificate before removing old certificate
-# (previous approach) comment out to update cert (also modify load balancer to not use ssl, temporarily)
-resource "google_compute_ssl_certificate" "certificate-1" {
-  name = "${var.network_name}-cert"
-  # create symlinks in project dir to actual key & cert
-  private_key = file("${path.module}/ssl-cert.key")
-  certificate = file("${path.module}/ssl-cert.pem")
-}
+# steps:
+# add new cert here, apply
+# add new cert to load balancer, apply
+# remove old cert from load balancer, apply
+# remove old cert from here, apply
 
+# (previous approach) comment out to update cert (also modify load balancer to not use ssl, temporarily)
 resource "google_compute_ssl_certificate" "certificate-2" {
   name = "${var.network_name}-cert-2"
   # create symlinks in project dir to actual key & cert
