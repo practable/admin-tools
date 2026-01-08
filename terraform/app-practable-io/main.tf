@@ -41,6 +41,13 @@ resource "google_compute_ssl_certificate" "certificate-2" {
   certificate = file("${path.module}/ssl-cert-2025-08.pem")
 }
 
+resource "google_compute_ssl_certificate" "certificate-3" {
+  name = "${var.network_name}-cert-3"
+  # create symlinks in project dir to actual key & cert
+  private_key = file("${path.module}/ssl-cert-2026-01.key")
+  certificate = file("${path.module}/ssl-cert-2026-01.pem")
+}
+
 resource "google_compute_router" "default" {
   name = "lb-https-redirect-router"
   #network = google_compute_network.default.self_link
