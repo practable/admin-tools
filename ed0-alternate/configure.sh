@@ -230,6 +230,9 @@ chmod +x ./jump/identify.sh
 envsubst '${HTTPS_HOST}  ${SECRETS}' < ./templates/relay-get-stats.sh.template > ./relay/get-stats.sh
 chmod +x ./relay/get-stats.sh
 
+envsubst '${HTTPS_HOST}  ${SECRETS}' < ./templates/relay-get-experiments.sh.template > ./relay/get-experiments.sh
+chmod +x ./relay/get-experiments.sh
+
 envsubst '${HTTPS_HOST}  ${SECRETS}' < ./templates/relay-identify.sh.template > ./relay/identify.sh
 chmod +x ./relay/identify.sh
 
