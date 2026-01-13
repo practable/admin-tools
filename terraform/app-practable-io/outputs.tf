@@ -27,3 +27,11 @@ output "backend_services" {
   sensitive = true
   value     = module.gce-lb-http.backend_services
 }
+
+output "monitoring_ip" {
+  value = google_compute_address.static-monitoring.address
+}
+
+output "monitoring_vm_name" {
+  value = google_compute_instance.monitoring_vm.name
+}

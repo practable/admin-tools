@@ -604,6 +604,38 @@ module "gce-lb-http" {
         enable = false
       }
     }
+    monitoring = {
+      protocol              = "HTTP"
+      load_balancing_scheme = "EXTERNAL"
+      port                  = 80
+      port_name             = "http"
+      timeout_sec           = 10
+      enable_cdn            = false
+
+      health_check = {
+        request_path = "/healthz"
+        port         = 80
+        logging      = true
+      }
+
+      log_config = {
+        enable = true
+      }
+
+      groups = [
+        {
+          group = google_compute_instance_group.monitoring.id
+        }
+      ]
+
+      iap_config = {
+        enable = false
+      }
+
+      # Cloud Armor allowlist
+      security_policy = google_compute_security_policy.monitoring_allow_uoe.self_link
+    }
+
   }
 }
 
@@ -659,6 +691,16 @@ resource "google_compute_url_map" "urlmap" {
       ]
       service = module.gce-lb-http.backend_services["ed-log"].self_link
     }
+
+    path_rule {
+      paths = [
+        "/monitoring",
+        "/monitoring/*"
+      ]
+      service = module.gce-lb-http.backend_services["monitoring"].self_link
+    }
+
+
 
   }
 }
@@ -776,5 +818,126 @@ resource "google_compute_instance" "ed-log_vm" {
     # in your instance, image, or app code
     email  = "469911504726-compute@developer.gserviceaccount.com"
     scopes = ["cloud-platform"]
+  }
+}
+
+
+# Adding prometheus and grafana instance
+
+data "google_compute_image" "ubuntu_image_monitoring" {
+  name    = "ubuntu-2404-noble-amd64-v20241219"
+  project = "ubuntu-os-cloud"
+}
+
+resource "google_compute_address" "static-monitoring" {
+  name   = "ipv4-address-monitoring"
+  region = var.region
+}
+
+resource "google_compute_disk" "prometheus_data" {
+  name = "prometheus-data"
+  type = "pd-balanced"
+  zone = var.zone
+  size = 50
+}
+
+resource "google_compute_instance" "monitoring_vm" {
+  name                      = "app-practable-io-alpha-monitoring"
+  machine_type              = "e2-small"
+  zone                      = var.zone
+  allow_stopping_for_update = true
+
+  # Important: do NOT use "http-server" here unless you want your existing
+  # web-firewall (0.0.0.0/0 -> 80) to apply.
+  tags = ["monitoring"]
+
+  # Optional: keep consistent with your newer instances
+  metadata = {
+    "enable-osconfig" = "TRUE"
+  }
+
+  boot_disk {
+    initialize_params {
+      image = data.google_compute_image.ubuntu_image_monitoring.self_link
+      size  = 20
+      type  = "pd-balanced"
+    }
+  }
+
+  # Prometheus TSDB disk (mount via Ansible at /var/lib/prometheus)
+  attached_disk {
+    source      = google_compute_disk.prometheus_data.id
+    device_name = "prometheus-data"
+  }
+
+  network_interface {
+    network = "default"
+    access_config {
+      nat_ip = google_compute_address.static-monitoring.address
+    }
+  }
+
+  service_account {
+    email  = "469911504726-compute@developer.gserviceaccount.com"
+    scopes = ["cloud-platform"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "google_compute_instance_group" "monitoring" {
+  name        = "instance-group-monitoring"
+  description = "instance group for /monitoring path"
+
+  instances = [google_compute_instance.monitoring_vm.self_link]
+
+  named_port {
+    name = "http"
+    port = 80
+  }
+
+  zone = var.zone
+}
+
+resource "google_compute_security_policy" "monitoring_allow_uoe" {
+  name        = "monitoring-allow-uoe"
+  description = "Allow /monitoring/* only from UoE IP ranges"
+
+  rule {
+    priority    = 1000
+    description = "Allow UoE ranges"
+    match {
+      versioned_expr = "SRC_IPS_V1"
+      config {
+        src_ip_ranges = [
+          "129.215.0.0/16",
+
+          # 192.41.103.0 - 192.41.131.255 as minimal CIDRs
+          "192.41.103.0/24",
+          "192.41.104.0/21",
+          "192.41.112.0/21",
+          "192.41.120.0/22",
+          "192.41.124.0/23",
+          "192.41.126.0/24",
+          "192.41.127.0/24",
+          "192.41.128.0/22",
+        ]
+      }
+    }
+    action = "allow"
+  }
+
+  rule {
+    priority    = 2147483647
+    description = "Default deny"
+    match {
+      versioned_expr = "SRC_IPS_V1"
+      config {
+        src_ip_ranges = ["*"]
+      }
+    }
+    action = "deny(403)"
   }
 }
