@@ -849,7 +849,8 @@ resource "google_compute_instance" "monitoring_vm" {
 
   # Important: do NOT use "http-server" here unless you want your existing
   # web-firewall (0.0.0.0/0 -> 80) to apply.
-  tags = ["monitoring"]
+  # to allow health checks, allow "tf-lb-https-redirect-nat"
+  tags = ["monitoring", "tf-lb-https-redirect-nat"]
 
   # Optional: keep consistent with your newer instances
   metadata = {
