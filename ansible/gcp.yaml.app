@@ -15,3 +15,4 @@ groups:
   app_practable_ed0-staging: "name == 'app-practable-io-alpha-ed0-staging'"
   app_practable_ed_dev_ui: "'app-practable-io-alpha-ed-dev-ui' in name"
   web_practable_default: "'web-practable-io-alpha-default' in name"
+  app_practable_monitoring: "name == 'app-practable-io-alpha-monitoring'"

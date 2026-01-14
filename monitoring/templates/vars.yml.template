@@ -1,0 +1,6 @@
+---
+domain: $DOMAIN
+instance_path: $INSTANCE_PATH
+prometheus_version: $PROMETHEUS_VERSION
+prometheus_data_device: $PROMETHEUS_DATA_DEVICE
+prometheus_data_mountpoint: $PROMETHEUS_DATA_MOUNTPOINT

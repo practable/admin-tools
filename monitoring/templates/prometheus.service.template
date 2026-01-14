@@ -1,0 +1,27 @@
+[Unit]
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
+RequiresMountsFor=${PROMETHEUS_DATA_MOUNTPOINT}
+
+[Service]
+User=prometheus
+Group=prometheus
+Type=simple
+
+ExecStart=/usr/local/bin/prometheus \
+  --config.file=/etc/prometheus/prometheus.yml \
+  --storage.tsdb.path=${PROMETHEUS_DATA_MOUNTPOINT} \
+  --storage.tsdb.retention.time=${PROMETHEUS_RETENTION} \
+  --web.listen-address=127.0.0.1:9090
+
+Restart=on-failure
+RestartSec=5s
+LimitNOFILE=65536
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target
