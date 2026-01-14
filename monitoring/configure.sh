@@ -92,6 +92,7 @@ envsubst '${DOMAIN}  ${INSTANCE_PATH}' < ./templates/vars.yml.template > ./autog
 # Populate our playbooks with group name and other variables
 export SSL_DOMAIN="${DOMAIN}/${INSTANCE_PATH}"
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-configure-kernel.yml.template > ./playbooks/configure-kernel.yml
+envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-install-monitoring.yml.template > ./playbooks/install-monitoring.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-install-nginx.yml.template > ./playbooks/install-nginx.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-nginx-conf.yml.template > ./playbooks/update-nginx-conf.yml
 
