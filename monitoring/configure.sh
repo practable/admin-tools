@@ -16,7 +16,7 @@ mkdir -p relay || true
 # Edit to suit your instance
 
 # Directory for services secrets (must contain book.pat, jump.pat, project, relay.pat)
-export SECRETS=~/secret/app.practable.io/ed0
+export SECRETS=~/secret/app.practable.io/monitoring
 export MAIL_SECRET=~/secret/zoho/mail.yaml
 
 export PROJECT=app-practable-io-alpha
@@ -38,10 +38,10 @@ export EMAIL=rl.eng@ed.ac.uk
 export ANSIBLE_GROUP=app_practable_monitoring
 
 #Prometheus setup
-export $PROMETHEUS_VERSION="2.54.1"
-export $PROMETHEUS_DATA_DEVICE="/dev/disk/by-id/google-prometheus-data"
-export $PROMETHEUS_DATA_MOUNTPOINT="/var/lib/prometheus"
-export $PROMETHEUS_RETENTION="180d"
+export PROMETHEUS_VERSION="2.54.1"
+export PROMETHEUS_DATA_DEVICE="/dev/disk/by-id/google-prometheus-data"
+export PROMETHEUS_DATA_MOUNTPOINT="/var/lib/prometheus"
+export PROMETHEUS_RETENTION="180d"
 
 # Grafana setup
 export GRAFANA_ADMIN_USER="admin"
@@ -91,9 +91,7 @@ envsubst '${DOMAIN}  ${INSTANCE_PATH}' < ./templates/vars.yml.template > ./autog
 
 # Populate our playbooks with group name and other variables
 export SSL_DOMAIN="${DOMAIN}/${INSTANCE_PATH}"
-envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-download-logs.yml.template > ./playbooks/download-logs.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-configure-kernel.yml.template > ./playbooks/configure-kernel.yml
-envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-install-monitor.yml.template > ./playbooks/install-monitor.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-install-nginx.yml.template > ./playbooks/install-nginx.yml
 envsubst '${ANSIBLE_GROUP}' < ./templates/playbook-update-nginx-conf.yml.template > ./playbooks/update-nginx-conf.yml
 
