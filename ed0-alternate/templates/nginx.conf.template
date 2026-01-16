@@ -197,6 +197,26 @@ http {
             index index.html;
         }
 
+        location /$INSTANCE_PATH/static/ui/stirring-default-1.0/ {
+            try_files $uri $uri/ $uri.html /static/ui/stirring-default-1.0/;
+            index index.html;
+        }
+
+        location /$INSTANCE_PATH/static/ui/stirring-logging-1.0/ {
+            try_files $uri $uri/ $uri.html /static/ui/stirring-logging-1.0/;
+            index index.html;
+        }
+
+        location /$INSTANCE_PATH/static/ui/torsion-default-1.0/ {
+            try_files $uri $uri/ $uri.html /static/ui/torsion-default-1.0/;
+            index index.html;
+        }
+
+        location /$INSTANCE_PATH/static/ui/torsion-logging-1.0/ {
+            try_files $uri $uri/ $uri.html /static/ui/torsion-logging-1.0/;
+            index index.html;
+        }
+
         location /$INSTANCE_PATH/static/ui/truss-1.0/ {
             try_files $uri $uri/ $uri.html /static/ui/truss-1.0/;
             index index.html;
