@@ -1,16 +1,31 @@
 [Unit]
-Description=github.com/practable/relay-monitor resources
+Description=github.com/practable/relay-monitor server
 After=network.target
 
 [Service]
 LimitNOFILE=99999
+Environment=RELAY_MONITOR_AUDIENCE=$RELAY_AUDIENCE
+Environment=RELAY_MONITOR_SECRET=$RELAY_SECRET
+Environment=RELAY_MONITOR_LOG_LEVEL=debug
+Environment=RELAY_MONITOR_LOG_FORMAT=json
+Environment=RELAY_MONITOR_LOG_FILE=/var/log/relay-monitor/latency.log
+Environment=RELAY_MONITOR_THRESHOLD=100ms
+Environment=RELAY_MONITOR_INTERVAL=1s
+Environment=RELAY_MONITOR_NO_RETRIGGER_WITHIN=1m
+Environment=RELAY_MONITOR_TRIGGER_AFTER_MISSES=10
+Environment=RELAY_MONITOR_TOPIC=canary-st-data
+Environment=RELAY_MONITOR_COMMAND=
 Environment=METRICS_INTERVAL=5s
-Environment=LISTEN_ADDR=:9105 
+Environment=RELAY_MONITOR_LISTEN_ADDR=:9106 
+Environment=HOME=/var/log/relay-monitor
 Type=simple
 Restart=always
-ExecStart=/usr/local/bin/relay-monitor resources
+ExecStart=/usr/local/bin/relay-monitor server
 
 PermissionsStartOnly=true
+ExecStartPre=/bin/mkdir -p /var/log/relay-monitor
+ExecStartPre=/bin/chown syslog:adm /var/log/relay-monitor
+ExecStartPre=/bin/chmod 755 /var/log/relay-monitor
 StandardOutput=journal
 StandardError=journal
 
