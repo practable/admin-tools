@@ -1,0 +1,19 @@
+[Unit]
+Description=github.com/practable/relay-monitor resources
+After=network.target
+
+[Service]
+LimitNOFILE=99999
+Environment=METRICS_INTERVAL=5s
+Environment=LISTEN_ADDR=:9105 
+Type=simple
+Restart=always
+ExecStart=/usr/local/bin/relay-monitor resources
+
+PermissionsStartOnly=true
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+

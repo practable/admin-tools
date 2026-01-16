@@ -1,0 +1,23 @@
+[Unit]
+Description=github.com/practable/relay-monitor resources
+After=network.target
+
+[Service]
+LimitNOFILE=99999
+Environment=METRICS_INTERVAL=5s
+Environment=LISTEN_ADDR=:9105 
+Environment=HOME=/var/log/relay-monitor
+Type=simple
+Restart=always
+ExecStart=/usr/local/bin/relay-monitor resources
+
+PermissionsStartOnly=true
+ExecStartPre=/bin/mkdir -p /var/log/relay-monitor
+ExecStartPre=/bin/chown syslog:adm /var/log/relay-monitor
+ExecStartPre=/bin/chmod 755 /var/log/relay-monitor
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+
