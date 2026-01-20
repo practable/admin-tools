@@ -81,6 +81,10 @@ http {
 
         # Grafana under /monitoring/
         location /monitoring/ {
+            
+            auth_basic "admin only";
+            auth_basic_user_file  htpasswd;
+
             proxy_http_version 1.1;
 
             proxy_set_header Host              $host;

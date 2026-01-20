@@ -633,7 +633,7 @@ module "gce-lb-http" {
       }
 
       # Cloud Armor allowlist
-      security_policy = google_compute_security_policy.monitoring_allow_uoe.self_link
+      #security_policy = google_compute_security_policy.monitoring_allow_uoe.self_link
     }
 
   }
