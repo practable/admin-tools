@@ -635,7 +635,34 @@ module "gce-lb-http" {
       # Cloud Armor allowlist
       #security_policy = google_compute_security_policy.monitoring_allow_uoe.self_link
     }
+    runner = {
+      protocol              = "HTTP"
+      load_balancing_scheme = "EXTERNAL"
+      port                  = 80
+      port_name             = "http"
+      timeout_sec           = 10
+      enable_cdn            = false
 
+      health_check = {
+        request_path = "/healthz"
+        port         = 80
+        logging      = true
+      }
+
+      log_config = {
+        enable = true
+      }
+
+      groups = [
+        {
+          group = google_compute_instance_group.runner.id
+        }
+      ]
+
+      iap_config = {
+        enable = false
+      }
+    }
   }
 }
 
@@ -700,7 +727,13 @@ resource "google_compute_url_map" "urlmap" {
       service = module.gce-lb-http.backend_services["monitoring"].self_link
     }
 
-
+    path_rule {
+      paths = [
+        "/runner",
+        "/runner/*"
+      ]
+      service = module.gce-lb-http.backend_services["runner"].self_link
+    }
 
   }
 }
@@ -941,4 +974,84 @@ resource "google_compute_security_policy" "monitoring_allow_uoe" {
     }
     action = "deny(403)"
   }
+}
+
+# Task-runner instance
+
+data "google_compute_image" "ubuntu_image_runner" {
+  name    = "ubuntu-2404-noble-amd64-v20241219"
+  project = "ubuntu-os-cloud"
+}
+
+resource "google_compute_address" "static-runner" {
+  name   = "ipv4-address-runner"
+  region = var.region
+}
+
+resource "google_compute_disk" "runner_data" {
+  name = "runner-data"
+  type = "pd-balanced"
+  zone = var.zone
+  size = 50
+}
+
+resource "google_compute_instance" "runner_vm" {
+  name                      = "app-practable-io-alpha-runner"
+  machine_type              = "e2-small"
+  zone                      = var.zone
+  allow_stopping_for_update = true
+
+  # Important: do NOT use "http-server" here unless you want your existing
+  # web-firewall (0.0.0.0/0 -> 80) to apply.
+  # to allow health checks, allow "tf-lb-https-redirect-nat"
+  tags = ["runner", "tf-lb-https-redirect-nat"]
+
+  # Optional: keep consistent with your newer instances
+  metadata = {
+    "enable-osconfig" = "TRUE"
+  }
+
+  boot_disk {
+    initialize_params {
+      image = data.google_compute_image.ubuntu_image_runner.self_link
+      size  = 20
+      type  = "pd-balanced"
+    }
+  }
+
+  # Runner  disk (mount via Ansible at /var/lib/runner)
+  attached_disk {
+    source      = google_compute_disk.runner_data.id
+    device_name = "runner-data"
+  }
+
+  network_interface {
+    network = "default"
+    access_config {
+      nat_ip = google_compute_address.static-runner.address
+    }
+  }
+
+  service_account {
+    email  = "469911504726-compute@developer.gserviceaccount.com"
+    scopes = ["cloud-platform"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "google_compute_instance_group" "runner" {
+  name        = "instance-group-runner"
+  description = "instance group for /runner path"
+
+  instances = [google_compute_instance.runner_vm.self_link]
+
+  named_port {
+    name = "http"
+    port = 80
+  }
+
+  zone = var.zone
 }
