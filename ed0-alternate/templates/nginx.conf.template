@@ -267,6 +267,11 @@ http {
             index index.html;
         }
 
+        location /$INSTANCE_PATH/static/ui/wind-default-1.0/ {
+            try_files $uri $uri/ $uri.html /static/ui/wind-default-1.0/;
+            index index.html;
+        }
+
         location /$INSTANCE_PATH/dev-static/ {
  
             add_header Access-Control-Allow-Origin *;
