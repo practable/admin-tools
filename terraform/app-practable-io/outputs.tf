@@ -35,3 +35,17 @@ output "monitoring_ip" {
 output "monitoring_vm_name" {
   value = google_compute_instance.monitoring_vm.name
 }
+
+output "ed1_external_ip" {
+  description = "Administrative external address for the ed1 pilot VM"
+  value       = google_compute_address.static-ed1.address
+}
+
+output "ed1_internal_ip" {
+  description = "Stable private address used by the existing Prometheus server"
+  value       = google_compute_address.internal-ed1.address
+}
+
+output "ed1_vm_name" {
+  value = google_compute_instance.ed1_vm.name
+}

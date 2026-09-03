@@ -604,6 +604,39 @@ module "gce-lb-http" {
         enable = false
       }
     }
+    ed1 = {
+      protocol              = "HTTP"
+      load_balancing_scheme = "EXTERNAL"
+      port                  = 80
+      port_name             = "http"
+      # Relay and Jump use long-lived WebSocket connections.
+      timeout_sec = 31536000
+      enable_cdn  = false
+
+      health_check = {
+        check_interval_sec  = 5
+        timeout_sec         = 2
+        healthy_threshold   = 2
+        unhealthy_threshold = 3
+        request_path        = "/ed1/healthz"
+        port                = 80
+        logging             = true
+      }
+
+      log_config = {
+        enable = true
+      }
+
+      groups = [
+        {
+          group = google_compute_instance_group.ed1.id
+        }
+      ]
+
+      iap_config = {
+        enable = false
+      }
+    }
     monitoring = {
       protocol              = "HTTP"
       load_balancing_scheme = "EXTERNAL"
@@ -733,6 +766,17 @@ resource "google_compute_url_map" "urlmap" {
         "/runner/*"
       ]
       service = module.gce-lb-http.backend_services["runner"].self_link
+    }
+
+    # Keep new rules at the end: path_rule is an ordered Terraform block, so
+    # inserting one earlier makes an otherwise harmless plan look as if every
+    # subsequent route is changing.
+    path_rule {
+      paths = [
+        "/ed1",
+        "/ed1/*"
+      ]
+      service = module.gce-lb-http.backend_services["ed1"].self_link
     }
 
   }
