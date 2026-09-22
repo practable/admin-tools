@@ -107,3 +107,54 @@ Assuming it is working on the `ed-dev-ui` server, then:
 - run the `ed0` `./configure.sh` script
 - run the ansible playbook `ansible-playbook update-nginx-conf.yaml`
 - edit the manifest in `github.com/practable/manifest-ed0`
+
+### Serving WebAssembly (`.wasm`) assets
+
+UIs that ship WebAssembly (e.g. `verisim-1.0`) must be served with
+`Content-Type: application/wasm`, otherwise the browser refuses to stream-compile
+the module (`WebAssembly.instantiateStreaming` fails and the UI does not start).
+
+The nginx packaged with Ubuntu 22.04 (nginx 1.18) predates the upstream addition of
+this mapping, so `/etc/nginx/mime.types` has no `wasm` entry:
+
+```
+grep -n 'wasm' /etc/nginx/mime.types   # no output on an unpatched server
+```
+
+The mapping is managed by ansible, in both `install-nginx` (new servers) and
+`update-nginx-conf` (existing servers), so it survives re-provisioning and
+subsequent configuration runs. Because `nginx.conf` already does
+`include /etc/nginx/mime.types;`, no change to `nginx.conf.template` is needed.
+
+To apply it to an existing server, from the instance directory (e.g. `ed0-alternate`):
+
+```
+cd ~/sources/admin-tools/ed0-alternate
+./configure.sh
+cd playbooks
+ansible-playbook update-nginx-conf.yml
+```
+
+The playbook validates the configuration with `nginx -t` before the handler reloads
+nginx, and only reloads if something actually changed. A second run reports
+`changed=0` and does not reload.
+
+Verify on the server:
+
+```
+grep -n 'wasm' /etc/nginx/mime.types
+# 55:    application/wasm                                 wasm;
+```
+
+And over HTTP, once the UI is deployed (`ed0` and `ed0-alternate` both serve the
+`ed0` instance path on `app.practable.io`):
+
+```
+curl -sSI https://app.practable.io/ed0/static/ui/verisim-1.0/<asset>.wasm \
+  | grep -Ei '^HTTP|^Content-Type'
+# HTTP/2 200
+# content-type: application/wasm
+```
+
+Substitute the instance path for other servers, e.g. `ed0-staging`, `ed-dev-ui`, or
+`https://test.practable.io/ed1/...` for `ed1-test`.
