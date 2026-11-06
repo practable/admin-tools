@@ -3,7 +3,11 @@
 # is intentionally separate and unchanged.
 
 data "google_compute_image" "ubuntu_image_ed1" {
-  family  = "ubuntu-2404-lts-amd64"
+  # Pinned to the image ed1 was built from. Using the image family meant every
+  # new Ubuntu image release forced Terraform to replace the VM. Kernel/security
+  # updates come from apt + reboot; bump this name only when you intend to rebuild.
+  name    = "ubuntu-2404-noble-amd64-v20260826"
+  #family = "ubuntu-2404-lts-amd64"
   project = "ubuntu-os-cloud"
 }
 
