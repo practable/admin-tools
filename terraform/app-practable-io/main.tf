@@ -71,6 +71,31 @@ data "template_file" "group-startup-script" {
   }
 }
 
+locals {
+  # Google Front End / load balancer proxies and health checkers.
+  # https://cloud.google.com/load-balancing/docs/health-check-concepts#ip-ranges
+  google_lb_ranges = ["130.211.0.0/22", "35.191.0.0/16"]
+
+  # Identity-Aware Proxy TCP forwarding (gcloud compute ssh --tunnel-through-iap,
+  # console "SSH" button).
+  iap_tcp_range = ["35.235.240.0/20"]
+
+  # University of Edinburgh ranges (also used by the monitoring Cloud Armor policy).
+  uoe_ranges = [
+    "129.215.0.0/16",
+
+    # 192.41.103.0 - 192.41.131.255 as minimal CIDRs
+    "192.41.103.0/24",
+    "192.41.104.0/21",
+    "192.41.112.0/21",
+    "192.41.120.0/22",
+    "192.41.124.0/23",
+    "192.41.126.0/24",
+    "192.41.127.0/24",
+    "192.41.128.0/22",
+  ]
+}
+
 resource "google_compute_firewall" "default" {
   name    = "web-firewall"
   network = "default"
@@ -81,8 +106,38 @@ resource "google_compute_firewall" "default" {
     ports    = ["80"]
   }
 
-  source_ranges = ["0.0.0.0/0"]
+  # Port 80 is only reachable via the HTTPS load balancer (TLS terminates there).
+  # Previously 0.0.0.0/0, which let anyone bypass the LB and hit nginx directly
+  # on each VM's external IP.
+  source_ranges = local.google_lb_ranges
   target_tags   = ["http-server"]
+}
+
+# SSH: previously the hand-made GCP default rule "default-allow-ssh" allowed
+# 0.0.0.0/0 to every instance. Now managed here.
+# Off-site admin and Ansible go through IAP; on-campus machines can still SSH directly.
+#
+# Bring the existing rule under Terraform before the first apply (Terraform >= 1.5
+# uses the import block below; on older versions delete the block and run:
+#   terraform import google_compute_firewall.ssh projects/app-practable-io-alpha/global/firewalls/default-allow-ssh
+import {
+  to = google_compute_firewall.ssh
+  id = "projects/app-practable-io-alpha/global/firewalls/default-allow-ssh"
+}
+
+resource "google_compute_firewall" "ssh" {
+  name        = "default-allow-ssh"
+  network     = "default"
+  description = "SSH from IAP and UoE only"
+  priority    = 65534
+  direction   = "INGRESS"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+
+  source_ranges = concat(local.iap_tcp_range, local.uoe_ranges)
 }
 
 data "google_compute_image" "ubuntu_image" {
@@ -989,19 +1044,7 @@ resource "google_compute_security_policy" "monitoring_allow_uoe" {
     match {
       versioned_expr = "SRC_IPS_V1"
       config {
-        src_ip_ranges = [
-          "129.215.0.0/16",
-
-          # 192.41.103.0 - 192.41.131.255 as minimal CIDRs
-          "192.41.103.0/24",
-          "192.41.104.0/21",
-          "192.41.112.0/21",
-          "192.41.120.0/22",
-          "192.41.124.0/23",
-          "192.41.126.0/24",
-          "192.41.127.0/24",
-          "192.41.128.0/22",
-        ]
+        src_ip_ranges = local.uoe_ranges
       }
     }
     action = "allow"
